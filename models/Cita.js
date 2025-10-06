@@ -5,13 +5,15 @@ class Cita {
     this.id_cita = data.id_cita;
     this.id_cliente = data.id_cliente;
     this.id_profesional = data.id_profesional;
-    this.id_precio = data.id_precio;
-    this.fecha = data.fecha;
+    this.fecha_inicio = data.fecha_inicio;
+    this.fecha_fin = data.fecha_fin;
+    this.duracion = data.duracion;
+    this.tipo_cita = data.tipo_cita || 'presencial';
     this.estado = data.estado || 'pendiente';
-    this.motivo = data.motivo;
     this.notas = data.notas;
-    this.created_at = data.created_at;
-    this.updated_at = data.updated_at;
+    this.id_pago = data.id_pago;
+    this.fecha_creacion = data.fecha_creacion;
+    this.fecha_actualizacion = data.fecha_actualizacion;
   }
 
   // Crear nueva cita
@@ -20,25 +22,27 @@ class Cita {
       const {
         id_cliente,
         id_profesional,
-        id_precio,
-        fecha,
-        motivo,
-        notas
+        fecha_inicio,
+        fecha_fin,
+        tipo_cita,
+        notas,
+        id_pago
       } = citaData;
 
       const query = `
         INSERT INTO CITAS (
-          id_cliente, id_profesional, id_precio, fecha, motivo, notas
-        ) VALUES (?, ?, ?, ?, ?, ?)
+          id_cliente, id_profesional, fecha_inicio, fecha_fin, tipo_cita, notas, id_pago
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await executeQuery(query, [
         id_cliente,
         id_profesional,
-        id_precio,
-        fecha,
-        motivo,
-        notas
+        fecha_inicio,
+        fecha_fin,
+        tipo_cita,
+        notas,
+        id_pago
       ]);
 
       return await this.findById(result.insertId);
@@ -54,11 +58,12 @@ class Cita {
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
         WHERE c.id_cita = ?
       `;
       const result = await executeQuery(query, [id]);
@@ -75,12 +80,13 @@ class Cita {
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
-        ORDER BY c.fecha DESC
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
+        ORDER BY c.fecha_inicio DESC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [limit, offset]);
@@ -96,12 +102,13 @@ class Cita {
       const query = `
         SELECT c.*, 
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
         WHERE c.id_cliente = ?
-        ORDER BY c.fecha DESC
+        ORDER BY c.fecha_inicio DESC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [id_cliente, limit, offset]);
@@ -117,12 +124,13 @@ class Cita {
       const query = `
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
         WHERE c.id_profesional = ?
-        ORDER BY c.fecha DESC
+        ORDER BY c.fecha_inicio DESC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [id_profesional, limit, offset]);
@@ -139,13 +147,14 @@ class Cita {
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
         WHERE c.estado = ?
-        ORDER BY c.fecha DESC
+        ORDER BY c.fecha_inicio DESC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [estado, limit, offset]);
@@ -162,13 +171,14 @@ class Cita {
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
-        WHERE DATE(c.fecha) = ?
-        ORDER BY c.fecha ASC
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
+        WHERE DATE(c.fecha_inicio) = ?
+        ORDER BY c.fecha_inicio ASC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [fecha, limit, offset]);
@@ -185,13 +195,14 @@ class Cita {
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
-        WHERE DATE(c.fecha) BETWEEN ? AND ?
-        ORDER BY c.fecha ASC
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
+        WHERE DATE(c.fecha_inicio) BETWEEN ? AND ?
+        ORDER BY c.fecha_inicio ASC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [fecha_inicio, fecha_fin, limit, offset]);
@@ -208,11 +219,12 @@ class Cita {
         SELECT c.*, 
                cl.nombre_completo as cliente_nombre,
                p.nombre_completo as profesional_nombre,
-               pr.nombre_paquete
+               pa.monto as pago_monto,
+               pa.estado as pago_estado
         FROM CITAS c
         JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
         JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
+        LEFT JOIN PAGOS pa ON c.id_pago = pa.id_pago
         WHERE 1=1
       `;
       const values = [];
@@ -232,22 +244,27 @@ class Cita {
         values.push(criteria.estado);
       }
 
+      if (criteria.tipo_cita) {
+        query += ' AND c.tipo_cita = ?';
+        values.push(criteria.tipo_cita);
+      }
+
       if (criteria.fecha_desde) {
-        query += ' AND DATE(c.fecha) >= ?';
+        query += ' AND DATE(c.fecha_inicio) >= ?';
         values.push(criteria.fecha_desde);
       }
 
       if (criteria.fecha_hasta) {
-        query += ' AND DATE(c.fecha) <= ?';
+        query += ' AND DATE(c.fecha_inicio) <= ?';
         values.push(criteria.fecha_hasta);
       }
 
-      if (criteria.motivo) {
-        query += ' AND c.motivo LIKE ?';
-        values.push(`%${criteria.motivo}%`);
+      if (criteria.notas) {
+        query += ' AND c.notas LIKE ?';
+        values.push(`%${criteria.notas}%`);
       }
 
-      query += ' ORDER BY c.fecha DESC LIMIT ? OFFSET ?';
+      query += ' ORDER BY c.fecha_inicio DESC LIMIT ? OFFSET ?';
       values.push(limit, offset);
 
       const result = await executeQuery(query, values);
@@ -261,8 +278,8 @@ class Cita {
   async update(updateData) {
     try {
       const allowedFields = [
-        'id_cliente', 'id_profesional', 'id_precio', 'fecha',
-        'estado', 'motivo', 'notas'
+        'id_cliente', 'id_profesional', 'fecha_inicio', 'fecha_fin',
+        'tipo_cita', 'estado', 'notas', 'id_pago'
       ];
       
       const updateFields = [];
@@ -292,7 +309,7 @@ class Cita {
   // Cambiar estado de la cita
   async cambiarEstado(nuevoEstado) {
     try {
-      const estadosValidos = ['pendiente', 'confirmada', 'cancelada', 'completada'];
+      const estadosValidos = ['pendiente', 'confirmada', 'cancelada', 'finalizada'];
       if (!estadosValidos.includes(nuevoEstado)) {
         throw new Error('Estado no válido');
       }
@@ -314,13 +331,16 @@ class Cita {
           COUNT(CASE WHEN estado = 'pendiente' THEN 1 END) as citas_pendientes,
           COUNT(CASE WHEN estado = 'confirmada' THEN 1 END) as citas_confirmadas,
           COUNT(CASE WHEN estado = 'cancelada' THEN 1 END) as citas_canceladas,
-          COUNT(CASE WHEN estado = 'completada' THEN 1 END) as citas_completadas
+          COUNT(CASE WHEN estado = 'finalizada' THEN 1 END) as citas_finalizadas,
+          COUNT(CASE WHEN tipo_cita = 'presencial' THEN 1 END) as citas_presenciales,
+          COUNT(CASE WHEN tipo_cita = 'virtual' THEN 1 END) as citas_virtuales,
+          COUNT(CASE WHEN tipo_cita = 'ambas' THEN 1 END) as citas_mixtas
         FROM CITAS
       `;
       const values = [];
 
       if (fecha_inicio && fecha_fin) {
-        query += ' WHERE DATE(fecha) BETWEEN ? AND ?';
+        query += ' WHERE DATE(fecha_inicio) BETWEEN ? AND ?';
         values.push(fecha_inicio, fecha_fin);
       }
 
