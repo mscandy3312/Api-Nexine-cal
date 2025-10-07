@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS PROFESIONALES (
     telefono VARCHAR(20),
     email VARCHAR(255),
     direccion TEXT,
+    domicilio_consultorio TEXT,
     descripcion TEXT,
     experiencia_años INT,
     tarifa_por_hora DECIMAL(10,2),
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS PROFESIONALES (
     motivo_rechazo TEXT,
     video_presentacion VARCHAR(500),
     modalidad_cita ENUM('presencial', 'virtual', 'ambas') DEFAULT 'presencial',
+    modo_atencion ENUM('consultorio', 'online', 'a_domicilio') DEFAULT 'consultorio',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (id_usuario) REFERENCES USUARIOS(id_usuario) ON DELETE CASCADE
