@@ -19,13 +19,19 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',        // Servidor de BD
   user: process.env.DB_USER || 'root',             // Usuario de BD
   password: process.env.DB_PASSWORD || '',         // Contraseña de BD
-  database: process.env.DB_NAME || 'calendario_terapeutico', // Nombre de BD
+  database: process.env.DB_NAME || 'sistema_citas', // Nombre de BD
   port: process.env.DB_PORT || 3306,               // Puerto de BD
   waitForConnections: true,                        // Esperar conexiones disponibles
   connectionLimit: 10,                             // Máximo 10 conexiones simultáneas
-  queueLimit: 0                                    // Sin límite en cola de conexiones
-  // Nota: acquireTimeout, timeout y reconnect no son opciones válidas en MySQL2
-  // Estas opciones fueron removidas para evitar advertencias
+  queueLimit: 0,                                   // Sin límite en cola de conexiones
+  // Configuraciones específicas para AWS RDS y producción
+  ssl: process.env.DB_SSL === 'true' ? {
+    rejectUnauthorized: false
+  } : false,                                       // SSL para AWS RDS
+  connectTimeout: 60000,                           // 60 segundos timeout
+  multipleStatements: false,                       // Seguridad: no permitir múltiples statements
+  dateStrings: true,                               // Devolver fechas como strings
+  timezone: 'Z'                                    // Usar UTC como timezone
 };
 
 // ========================================
@@ -46,13 +52,28 @@ const testConnection = async () => {
   try {
     // Obtener una conexión del pool
     const connection = await pool.getConnection();
+    
+    // Mostrar información de la conexión
     console.log('✅ Conexión a la base de datos establecida correctamente');
+    console.log(`   Host: ${dbConfig.host}:${dbConfig.port}`);
+    console.log(`   Base de datos: ${dbConfig.database}`);
+    console.log(`   Usuario: ${dbConfig.user}`);
+    console.log(`   SSL: ${dbConfig.ssl ? 'Habilitado' : 'Deshabilitado'}`);
+    
+    // Probar una consulta simple
+    const [rows] = await connection.execute('SELECT 1 as test, NOW() as current_time');
+    console.log('✅ Consulta de prueba exitosa');
     
     // Liberar la conexión de vuelta al pool
     connection.release();
     return true;
   } catch (error) {
-    console.error('❌ Error al conectar con la base de datos:', error.message);
+    console.error('❌ Error al conectar con la base de datos:');
+    console.error(`   Código: ${error.code}`);
+    console.error(`   Mensaje: ${error.message}`);
+    console.error(`   Host: ${dbConfig.host}:${dbConfig.port}`);
+    console.error(`   Usuario: ${dbConfig.user}`);
+    console.error(`   Base de datos: ${dbConfig.database}`);
     return false;
   }
 };

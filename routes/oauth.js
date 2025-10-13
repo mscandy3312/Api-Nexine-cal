@@ -109,7 +109,7 @@ router.post('/whatsapp', validacionesWhatsApp, handleValidationErrors, oauthCont
  * @body {string} proveedor - Proveedor OAuth (google/whatsapp)
  * @body {string} token - Token del proveedor OAuth
  */
-router.post('/vincular', auth, validacionesVincular, handleValidationErrors, oauthController.vincularOAuth);
+router.post('/vincular', auth.authenticateToken, validacionesVincular, handleValidationErrors, oauthController.vincularOAuth);
 
 /**
  * @route DELETE /api/oauth/desvincular/:proveedor
@@ -117,14 +117,14 @@ router.post('/vincular', auth, validacionesVincular, handleValidationErrors, oau
  * @access Private
  * @param {string} proveedor - Proveedor OAuth a desvincular
  */
-router.delete('/desvincular/:proveedor', auth, validacionesProveedor, handleValidationErrors, oauthController.desvincularOAuth);
+router.delete('/desvincular/:proveedor', auth.authenticateToken, validacionesProveedor, handleValidationErrors, oauthController.desvincularOAuth);
 
 /**
  * @route GET /api/oauth/info
  * @desc Obtener información OAuth del usuario autenticado
  * @access Private
  */
-router.get('/info', auth, oauthController.obtenerInfoOAuth);
+router.get('/info', auth.authenticateToken, oauthController.obtenerInfoOAuth);
 
 /**
  * @route GET /api/oauth/estado/:proveedor

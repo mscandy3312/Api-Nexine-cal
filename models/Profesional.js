@@ -10,7 +10,6 @@ class Profesional {
     this.numero_colegiado = data.numero_colegiado;
     this.especialidad = data.especialidad;
     this.direccion = data.direccion;
-    this.domicilio_consultorio = data.domicilio_consultorio;
     this.rating = data.rating || 0;
     this.biografia = data.biografia;
     this.foto_perfil = data.foto_perfil;
@@ -20,7 +19,6 @@ class Profesional {
     this.motivo_rechazo = data.motivo_rechazo;
     this.video_presentacion = data.video_presentacion;
     this.modalidad_cita = data.modalidad_cita || 'presencial';
-    this.modo_atencion = data.modo_atencion || 'consultorio';
   }
 
   // Crear nuevo profesional
@@ -34,21 +32,19 @@ class Profesional {
         numero_colegiado,
         especialidad,
         direccion,
-        domicilio_consultorio,
         biografia,
         foto_perfil,
         certificaciones,
         video_presentacion,
-        modalidad_cita,
-        modo_atencion
+        modalidad_cita
       } = profesionalData;
 
       const query = `
         INSERT INTO PROFESIONALES (
           id_usuario, id_stripe, nombre_completo, telefono, numero_colegiado,
-          especialidad, direccion, domicilio_consultorio, biografia, foto_perfil, certificaciones,
-          video_presentacion, modalidad_cita, modo_atencion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          especialidad, direccion, biografia, foto_perfil, certificaciones,
+          video_presentacion, modalidad_cita
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await executeQuery(query, [
@@ -59,13 +55,11 @@ class Profesional {
         numero_colegiado,
         especialidad,
         direccion,
-        domicilio_consultorio,
         biografia,
         foto_perfil,
         certificaciones,
         video_presentacion,
-        modalidad_cita,
-        modo_atencion
+        modalidad_cita
       ]);
 
       return await this.findById(result.insertId);
@@ -187,8 +181,8 @@ class Profesional {
     try {
       const allowedFields = [
         'id_stripe', 'nombre_completo', 'telefono', 'numero_colegiado',
-        'especialidad', 'direccion', 'domicilio_consultorio', 'biografia', 'foto_perfil', 'certificaciones',
-        'video_presentacion', 'modalidad_cita', 'modo_atencion', 'estado_aprobacion', 'motivo_rechazo'
+        'especialidad', 'direccion', 'biografia', 'foto_perfil', 'certificaciones',
+        'video_presentacion', 'modalidad_cita', 'estado_aprobacion', 'motivo_rechazo'
       ];
       
       const updateFields = [];
