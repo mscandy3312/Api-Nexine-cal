@@ -137,7 +137,7 @@ node -e "const { testConnection } = require('./config/database'); testConnection
 node create-admin-user.js --list
 ```
 
-### Verificar servidor:
+### Verificar servidor:npm install axios
 ```bash
 npm start
 # Visitar: http://localhost:3000/health
