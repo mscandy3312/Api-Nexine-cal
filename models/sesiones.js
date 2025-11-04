@@ -3,10 +3,10 @@ const { executeQuery } = require('../config/database');
 class Sesion {
   constructor(data) {
     this.id_sesion = data.id_sesion;
-    this.id_cliente = data.id_cliente;
+    this.id_clientes = data.id_clientes;
     this.id_profesional = data.id_profesional;
     this.id_precio = data.id_precio;
-    this.id_cita = data.id_cita;
+    this.id_citas = data.id_citas;
     this.numero_pedido = data.numero_pedido;
     this.fecha = data.fecha;
     this.estado = data.estado;
@@ -19,10 +19,10 @@ class Sesion {
   static async create(sesionData) {
     try {
       const {
-        id_cliente,
+        id_clientes,
         id_profesional,
         id_precio,
-        id_cita,
+        id_citas,
         numero_pedido,
         fecha,
         estado,
@@ -33,16 +33,16 @@ class Sesion {
 
       const query = `
         INSERT INTO SESIONES (
-          id_cliente, id_profesional, id_precio, id_cita, numero_pedido,
+          id_clientes, id_profesional, id_precio, id_citas, numero_pedido,
           fecha, estado, acciones, producto, metodo_pago
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await executeQuery(query, [
-        id_cliente,
+        id_clientes,
         id_profesional,
         id_precio,
-        id_cita,
+        id_citas,
         numero_pedido,
         fecha,
         estado,
@@ -62,11 +62,11 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE s.id_sesion = ?
@@ -83,11 +83,11 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE s.numero_pedido = ?
@@ -104,11 +104,11 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         ORDER BY s.fecha DESC
@@ -121,8 +121,8 @@ class Sesion {
     }
   }
 
-  // Buscar sesiones por cliente
-  static async findByCliente(id_cliente, limit = 50, offset = 0) {
+  // Buscar sesiones por clientes
+  static async findByclientes(id_clientes, limit = 50, offset = 0) {
     try {
       const query = `
         SELECT s.*, 
@@ -131,11 +131,11 @@ class Sesion {
         FROM SESIONES s
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
-        WHERE s.id_cliente = ?
+        WHERE s.id_clientes = ?
         ORDER BY s.fecha DESC
         LIMIT ? OFFSET ?
       `;
-      const result = await executeQuery(query, [id_cliente, limit, offset]);
+      const result = await executeQuery(query, [id_clientes, limit, offset]);
       return result.map(sesion => new Sesion(sesion));
     } catch (error) {
       throw error;
@@ -147,10 +147,10 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE s.id_profesional = ?
         ORDER BY s.fecha DESC
@@ -168,11 +168,11 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE s.estado = ?
@@ -191,11 +191,11 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE DATE(s.fecha) = ?
@@ -214,11 +214,11 @@ class Sesion {
     try {
       const query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE DATE(s.fecha) BETWEEN ? AND ?
@@ -237,20 +237,20 @@ class Sesion {
     try {
       let query = `
         SELECT s.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre,
                pr.nombre_paquete
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
         WHERE 1=1
       `;
       const values = [];
 
-      if (criteria.id_cliente) {
-        query += ' AND s.id_cliente = ?';
-        values.push(criteria.id_cliente);
+      if (criteria.id_clientes) {
+        query += ' AND s.id_clientes = ?';
+        values.push(criteria.id_clientes);
       }
 
       if (criteria.id_profesional) {
@@ -297,7 +297,7 @@ class Sesion {
   async update(updateData) {
     try {
       const allowedFields = [
-        'id_cliente', 'id_profesional', 'id_precio', 'id_cita',
+        'id_clientes', 'id_profesional', 'id_precio', 'id_citas',
         'numero_pedido', 'fecha', 'estado', 'acciones', 'producto', 'metodo_pago'
       ];
       
@@ -365,10 +365,10 @@ class Sesion {
   async getValoraciones() {
     try {
       const query = `
-        SELECT v.*, c.nombre_completo as cliente_nombre
+        SELECT v.*, c.nombre_completo as clientes_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE v.id_sesion = ?
         ORDER BY v.fecha DESC
       `;

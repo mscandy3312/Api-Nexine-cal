@@ -49,16 +49,16 @@ const requireRole = (roles) => {
   };
 };
 
-// Middleware para verificar que el usuario es admin
+// Middleware para verificar que el usuarioss es admin
 const requireAdmin = requireRole('admin');
 
-// Middleware para verificar que el usuario es profesional o admin
+// Middleware para verificar que el usuarioss es profesional o admin
 const requireProfesionalOrAdmin = requireRole(['profesional', 'admin']);
 
-// Middleware para verificar que el usuario es cliente o admin
-const requireClienteOrAdmin = requireRole(['cliente', 'admin']);
+// Middleware para verificar que el usuarioss es clientes o admin
+const requireclientesOrAdmin = requireRole(['clientes', 'admin']);
 
-// Middleware para verificar que el usuario es el propietario del recurso
+// Middleware para verificar que el usuarioss es el propietario del recurso
 const requireOwnership = (req, res, next) => {
   const userId = req.params.userId || req.params.id;
   
@@ -77,6 +77,6 @@ module.exports = {
   requireRole,
   requireAdmin,
   requireProfesionalOrAdmin,
-  requireClienteOrAdmin,
+  requireclientesOrAdmin,
   requireOwnership
 };

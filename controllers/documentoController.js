@@ -1,4 +1,4 @@
-const Documento = require('../models/Documento');
+const Documento = require('../models/documentos');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

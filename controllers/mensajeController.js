@@ -1,4 +1,4 @@
-const Mensaje = require('../models/Mensaje');
+const Mensaje = require('../models/mensajes');
 const { validationResult } = require('express-validator');
 
 // Enviar mensaje
@@ -14,7 +14,7 @@ const enviarMensaje = async (req, res) => {
     }
 
     const { id_destinatario, asunto, contenido, tipo_mensaje, prioridad } = req.body;
-    const id_remitente = req.user.id_usuario;
+    const id_remitente = req.user.id_usuarioss;
 
     const mensaje = await Mensaje.create({
       id_remitente,
@@ -46,10 +46,10 @@ const enviarMensaje = async (req, res) => {
 const obtenerMensajesRecibidos = async (req, res) => {
   try {
     const { limit = 50, offset = 0, solo_no_leidos = false } = req.query;
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
     const mensajes = await Mensaje.findByDestinatario(
-      id_usuario, 
+      id_usuarioss, 
       parseInt(limit), 
       parseInt(offset), 
       solo_no_leidos === 'true'
@@ -80,9 +80,9 @@ const obtenerMensajesRecibidos = async (req, res) => {
 const obtenerMensajesEnviados = async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
-    const mensajes = await Mensaje.findByRemitente(id_usuario, parseInt(limit), parseInt(offset));
+    const mensajes = await Mensaje.findByRemitente(id_usuarioss, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
@@ -105,16 +105,16 @@ const obtenerMensajesEnviados = async (req, res) => {
   }
 };
 
-// Obtener conversación entre dos usuarios
+// Obtener conversación entre dos usuariosss
 const obtenerConversacion = async (req, res) => {
   try {
-    const { id_usuario2 } = req.params;
+    const { id_usuarioss2 } = req.params;
     const { limit = 50, offset = 0 } = req.query;
-    const id_usuario1 = req.user.id_usuario;
+    const id_usuarioss1 = req.user.id_usuarioss;
 
     const mensajes = await Mensaje.getConversacion(
-      id_usuario1, 
-      id_usuario2, 
+      id_usuarioss1, 
+      id_usuarioss2, 
       parseInt(limit), 
       parseInt(offset)
     );
@@ -123,8 +123,8 @@ const obtenerConversacion = async (req, res) => {
       success: true,
       data: {
         mensajes,
-        id_usuario1,
-        id_usuario2,
+        id_usuarioss1,
+        id_usuarioss2,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
@@ -155,8 +155,8 @@ const marcarComoLeido = async (req, res) => {
       });
     }
 
-    // Verificar que el usuario es el destinatario
-    if (mensaje.id_destinatario !== req.user.id_usuario) {
+    // Verificar que el usuarioss es el destinatario
+    if (mensaje.id_destinatario !== req.user.id_usuarioss) {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para marcar este mensaje como leído'
@@ -213,9 +213,9 @@ const marcarComoLeidos = async (req, res) => {
 // Marcar todos los mensajes como leídos
 const marcarTodosComoLeidos = async (req, res) => {
   try {
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
-    const mensajesLeidos = await Mensaje.marcarTodasComoLeidas(id_usuario);
+    const mensajesLeidos = await Mensaje.marcarTodasComoLeidas(id_usuarioss);
 
     res.json({
       success: true,
@@ -237,9 +237,9 @@ const marcarTodosComoLeidos = async (req, res) => {
 // Obtener estadísticas de mensajes
 const obtenerEstadisticasMensajes = async (req, res) => {
   try {
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
-    const stats = await Mensaje.getStats(id_usuario);
+    const stats = await Mensaje.getStats(id_usuarioss);
 
     res.json({
       success: true,
@@ -261,9 +261,9 @@ const obtenerEstadisticasMensajes = async (req, res) => {
 const obtenerContactosRecientes = async (req, res) => {
   try {
     const { limit = 20 } = req.query;
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
-    const contactos = await Mensaje.getContactosRecientes(id_usuario, parseInt(limit));
+    const contactos = await Mensaje.getContactosRecientes(id_usuarioss, parseInt(limit));
 
     res.json({
       success: true,
@@ -287,7 +287,7 @@ const buscarMensajes = async (req, res) => {
   try {
     const { searchTerm } = req.query;
     const { limit = 50, offset = 0 } = req.query;
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
     if (!searchTerm) {
       return res.status(400).json({
@@ -297,7 +297,7 @@ const buscarMensajes = async (req, res) => {
     }
 
     const mensajes = await Mensaje.searchByContent(
-      id_usuario, 
+      id_usuarioss, 
       searchTerm, 
       parseInt(limit), 
       parseInt(offset)
@@ -338,8 +338,8 @@ const obtenerMensajePorId = async (req, res) => {
       });
     }
 
-    // Verificar que el usuario tiene acceso al mensaje
-    if (mensaje.id_remitente !== req.user.id_usuario && mensaje.id_destinatario !== req.user.id_usuario) {
+    // Verificar que el usuarioss tiene acceso al mensaje
+    if (mensaje.id_remitente !== req.user.id_usuarioss && mensaje.id_destinatario !== req.user.id_usuarioss) {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para ver este mensaje'
@@ -375,8 +375,8 @@ const eliminarMensaje = async (req, res) => {
       });
     }
 
-    // Verificar que el usuario puede eliminar el mensaje
-    if (mensaje.id_remitente !== req.user.id_usuario && mensaje.id_destinatario !== req.user.id_usuario) {
+    // Verificar que el usuarioss puede eliminar el mensaje
+    if (mensaje.id_remitente !== req.user.id_usuarioss && mensaje.id_destinatario !== req.user.id_usuarioss) {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para eliminar este mensaje'

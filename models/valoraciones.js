@@ -51,12 +51,12 @@ class Valoracion {
     try {
       const query = `
         SELECT v.*, 
-               s.id_cliente, s.id_profesional,
-               c.nombre_completo as cliente_nombre,
+               s.id_clientes, s.id_profesional,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         WHERE v.id_valoracion = ?
       `;
@@ -72,12 +72,12 @@ class Valoracion {
     try {
       const query = `
         SELECT v.*, 
-               s.id_cliente, s.id_profesional,
-               c.nombre_completo as cliente_nombre,
+               s.id_clientes, s.id_profesional,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         ORDER BY v.fecha DESC
         LIMIT ? OFFSET ?
@@ -94,11 +94,11 @@ class Valoracion {
     try {
       const query = `
         SELECT v.*, 
-               c.nombre_completo as cliente_nombre,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         WHERE v.id_sesion = ?
         ORDER BY v.fecha DESC
@@ -115,11 +115,11 @@ class Valoracion {
     try {
       const query = `
         SELECT v.*, 
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE s.id_profesional = ?
         ORDER BY v.fecha DESC
         LIMIT ? OFFSET ?
@@ -131,8 +131,8 @@ class Valoracion {
     }
   }
 
-  // Buscar valoraciones por cliente
-  static async findByCliente(id_cliente, limit = 50, offset = 0) {
+  // Buscar valoraciones por clientes
+  static async findByclientes(id_clientes, limit = 50, offset = 0) {
     try {
       const query = `
         SELECT v.*, 
@@ -141,11 +141,11 @@ class Valoracion {
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
-        WHERE s.id_cliente = ?
+        WHERE s.id_clientes = ?
         ORDER BY v.fecha DESC
         LIMIT ? OFFSET ?
       `;
-      const result = await executeQuery(query, [id_cliente, limit, offset]);
+      const result = await executeQuery(query, [id_clientes, limit, offset]);
       return result.map(valoracion => new Valoracion(valoracion));
     } catch (error) {
       throw error;
@@ -157,12 +157,12 @@ class Valoracion {
     try {
       const query = `
         SELECT v.*, 
-               s.id_cliente, s.id_profesional,
-               c.nombre_completo as cliente_nombre,
+               s.id_clientes, s.id_profesional,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         WHERE v.rating = ?
         ORDER BY v.fecha DESC
@@ -180,12 +180,12 @@ class Valoracion {
     try {
       const query = `
         SELECT v.*, 
-               s.id_cliente, s.id_profesional,
-               c.nombre_completo as cliente_nombre,
+               s.id_clientes, s.id_profesional,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         WHERE v.estado = ?
         ORDER BY v.fecha DESC
@@ -203,12 +203,12 @@ class Valoracion {
     try {
       let query = `
         SELECT v.*, 
-               s.id_cliente, s.id_profesional,
-               c.nombre_completo as cliente_nombre,
+               s.id_clientes, s.id_profesional,
+               c.nombre_completo as clientes_nombre,
                p.nombre_completo as profesional_nombre
         FROM VALORACIONES v
         JOIN SESIONES s ON v.id_sesion = s.id_sesion
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         WHERE 1=1
       `;
@@ -219,9 +219,9 @@ class Valoracion {
         values.push(criteria.id_profesional);
       }
 
-      if (criteria.id_cliente) {
-        query += ' AND s.id_cliente = ?';
-        values.push(criteria.id_cliente);
+      if (criteria.id_clientes) {
+        query += ' AND s.id_clientes = ?';
+        values.push(criteria.id_clientes);
       }
 
       if (criteria.rating) {

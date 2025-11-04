@@ -1,97 +1,97 @@
 const express = require('express');
 const router = express.Router();
-const citaController = require('../controllers/citaController');
+const citasController = require('../controllers/citaController');
 const { authenticateToken } = require('../middleware/auth');
 const { 
-  validateCita, 
+  validatecitas, 
   validateParams, 
   validateQuery, 
   handleValidationErrors 
 } = require('../middleware/validation');
 
-// Crear cita
+// Crear citas
 router.post('/', 
   authenticateToken, 
-  validateCita.crear, 
+  validatecitas.crear, 
   handleValidationErrors, 
-  citaController.crearCita
+  citasController.crearcitas
 );
 
-// Obtener todas las citas
+// Obtener todas las citass
 router.get('/', 
   authenticateToken, 
   validateQuery.paginacion, 
   validateQuery.fechas, 
   handleValidationErrors, 
-  citaController.obtenerCitas
+  citasController.obtenercitass
 );
 
-// Buscar citas
+// Buscar citass
 router.get('/buscar', 
   authenticateToken, 
   validateQuery.paginacion, 
   validateQuery.fechas, 
   handleValidationErrors, 
-  citaController.buscarCitas
+  citasController.buscarcitass
 );
 
-// Obtener estadísticas de citas
+// Obtener estadísticas de citass
 router.get('/estadisticas', 
   authenticateToken, 
   validateQuery.fechas, 
   handleValidationErrors, 
-  citaController.obtenerEstadisticasCitas
+  citasController.obtenerEstadisticascitass
 );
 
-// Obtener cita por ID
+// Obtener citas por ID
 router.get('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  citaController.obtenerCitaPorId
+  citasController.obtenercitasPorId
 );
 
-// Obtener citas por cliente
-router.get('/cliente/:id_cliente', 
+// Obtener citass por clientes
+router.get('/clientes/:id_clientes', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  citaController.obtenerCitasPorCliente
+  citasController.obtenercitassPorclientes
 );
 
-// Obtener citas por profesional
+// Obtener citass por profesional
 router.get('/profesional/:id_profesional', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  citaController.obtenerCitasPorProfesional
+  citasController.obtenercitassPorProfesional
 );
 
-// Actualizar cita
+// Actualizar citas
 router.put('/:id', 
   authenticateToken, 
   validateParams.id, 
-  validateCita.crear, 
+  validatecitas.crear, 
   handleValidationErrors, 
-  citaController.actualizarCita
+  citasController.actualizarcitas
 );
 
-// Cambiar estado de la cita
+// Cambiar estado de la citas
 router.put('/:id/estado', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  citaController.cambiarEstadoCita
+  citasController.cambiarEstadocitas
 );
 
-// Eliminar cita
+// Eliminar citas
 router.delete('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  citaController.eliminarCita
+  citasController.eliminarcitas
 );
 
 module.exports = router;

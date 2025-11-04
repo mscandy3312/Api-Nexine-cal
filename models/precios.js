@@ -233,9 +233,9 @@ class Precio {
   async getSesiones(limit = 20, offset = 0) {
     try {
       const query = `
-        SELECT s.*, c.nombre_completo as cliente_nombre, p.nombre_completo as profesional_nombre
+        SELECT s.*, c.nombre_completo as clientes_nombre, p.nombre_completo as profesional_nombre
         FROM SESIONES s
-        JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        JOIN clientesS c ON s.id_clientes = c.id_clientes
         JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
         WHERE s.id_precio = ?
         ORDER BY s.fecha DESC

@@ -14,10 +14,10 @@ const crearSesion = async (req, res) => {
     }
 
     const {
-      id_cliente,
+      id_clientes,
       id_profesional,
       id_precio,
-      id_cita,
+      id_citas,
       numero_pedido,
       fecha,
       estado,
@@ -27,10 +27,10 @@ const crearSesion = async (req, res) => {
     } = req.body;
 
     const nuevaSesion = await Sesion.create({
-      id_cliente,
+      id_clientes,
       id_profesional,
       id_precio,
-      id_cita,
+      id_citas,
       numero_pedido,
       fecha,
       estado,
@@ -155,19 +155,19 @@ const obtenerSesionPorPedido = async (req, res) => {
   }
 };
 
-// Obtener sesiones por cliente
-const obtenerSesionesPorCliente = async (req, res) => {
+// Obtener sesiones por clientes
+const obtenerSesionesPorclientes = async (req, res) => {
   try {
-    const { id_cliente } = req.params;
+    const { id_clientes } = req.params;
     const { limit = 50, offset = 0 } = req.query;
     
-    const sesiones = await Sesion.findByCliente(id_cliente, parseInt(limit), parseInt(offset));
+    const sesiones = await Sesion.findByclientes(id_clientes, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
         sesiones,
-        id_cliente,
+        id_clientes,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
@@ -176,7 +176,7 @@ const obtenerSesionesPorCliente = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error al obtener sesiones por cliente:', error);
+    console.error('Error al obtener sesiones por clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -238,10 +238,10 @@ const actualizarSesion = async (req, res) => {
     }
 
     const {
-      id_cliente,
+      id_clientes,
       id_profesional,
       id_precio,
-      id_cita,
+      id_citas,
       numero_pedido,
       fecha,
       estado,
@@ -251,10 +251,10 @@ const actualizarSesion = async (req, res) => {
     } = req.body;
 
     const datosActualizacion = {};
-    if (id_cliente) datosActualizacion.id_cliente = id_cliente;
+    if (id_clientes) datosActualizacion.id_clientes = id_clientes;
     if (id_profesional) datosActualizacion.id_profesional = id_profesional;
     if (id_precio !== undefined) datosActualizacion.id_precio = id_precio;
-    if (id_cita !== undefined) datosActualizacion.id_cita = id_cita;
+    if (id_citas !== undefined) datosActualizacion.id_citas = id_citas;
     if (numero_pedido !== undefined) datosActualizacion.numero_pedido = numero_pedido;
     if (fecha) datosActualizacion.fecha = fecha;
     if (estado) datosActualizacion.estado = estado;
@@ -320,7 +320,7 @@ const buscarSesiones = async (req, res) => {
     const { 
       limit = 50, 
       offset = 0, 
-      id_cliente, 
+      id_clientes, 
       id_profesional, 
       estado, 
       fecha_desde, 
@@ -330,7 +330,7 @@ const buscarSesiones = async (req, res) => {
     } = req.query;
 
     const criterios = {};
-    if (id_cliente) criterios.id_cliente = id_cliente;
+    if (id_clientes) criterios.id_clientes = id_clientes;
     if (id_profesional) criterios.id_profesional = id_profesional;
     if (estado) criterios.estado = estado;
     if (fecha_desde) criterios.fecha_desde = fecha_desde;
@@ -422,7 +422,7 @@ module.exports = {
   obtenerSesiones,
   obtenerSesionPorId,
   obtenerSesionPorPedido,
-  obtenerSesionesPorCliente,
+  obtenerSesionesPorclientes,
   obtenerSesionesPorProfesional,
   actualizarSesion,
   cambiarEstadoSesion,

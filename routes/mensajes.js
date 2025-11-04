@@ -31,9 +31,9 @@ router.get('/enviados',
   mensajeController.obtenerMensajesEnviados
 );
 
-router.get('/conversacion/:id_usuario2', 
+router.get('/conversacion/:id_usuarioss2', 
   authenticateToken, 
-  validateParams.idUsuario, 
+  validateParams.idusuarioss, 
   validateQuery.paginacion, 
   handleValidationErrors, 
   mensajeController.obtenerConversacion

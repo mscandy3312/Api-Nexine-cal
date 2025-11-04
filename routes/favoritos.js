@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const favoritoController = require('../controllers/favoritoController');
-const { authenticateToken, requireClienteOrAdmin } = require('../middleware/auth');
+const { authenticateToken, requireclientesOrAdmin } = require('../middleware/auth');
 const { 
   validateFavorito,
   validateParams, 
@@ -12,7 +12,7 @@ const {
 // Rutas para Favoritos
 router.post('/', 
   authenticateToken, 
-  requireClienteOrAdmin,
+  requireclientesOrAdmin,
   validateFavorito.crear,
   handleValidationErrors,
   favoritoController.agregarFavorito
@@ -20,7 +20,7 @@ router.post('/',
 
 router.get('/', 
   authenticateToken, 
-  requireClienteOrAdmin,
+  requireclientesOrAdmin,
   validateQuery.paginacion, 
   handleValidationErrors, 
   favoritoController.obtenerFavoritos
@@ -28,7 +28,7 @@ router.get('/',
 
 router.get('/verificar/:id_profesional', 
   authenticateToken, 
-  requireClienteOrAdmin,
+  requireclientesOrAdmin,
   validateParams.idProfesional, 
   handleValidationErrors, 
   favoritoController.verificarFavorito
@@ -39,7 +39,7 @@ router.get('/profesional/:id_profesional',
   validateParams.idProfesional, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  favoritoController.obtenerClientesFavoritos
+  favoritoController.obtenerclientessFavoritos
 );
 
 router.get('/estadisticas', 
@@ -65,7 +65,7 @@ router.get('/:id',
 
 router.delete('/profesional/:id_profesional', 
   authenticateToken, 
-  requireClienteOrAdmin,
+  requireclientesOrAdmin,
   validateParams.idProfesional, 
   handleValidationErrors, 
   favoritoController.eliminarFavorito

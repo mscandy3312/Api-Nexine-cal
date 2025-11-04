@@ -55,8 +55,8 @@ class Mensaje {
                ud.nombre as destinatario_nombre,
                ud.email as destinatario_email
         FROM MENSAJES m
-        JOIN USUARIOS ur ON m.id_remitente = ur.id_usuario
-        JOIN USUARIOS ud ON m.id_destinatario = ud.id_usuario
+        JOIN usuariossS ur ON m.id_remitente = ur.id_usuarioss
+        JOIN usuariossS ud ON m.id_destinatario = ud.id_usuarioss
         WHERE m.id_mensaje = ?
       `;
       const result = await executeQuery(query, [id]);
@@ -66,7 +66,7 @@ class Mensaje {
     }
   }
 
-  // Obtener mensajes recibidos por un usuario
+  // Obtener mensajes recibidos por un usuarioss
   static async findByDestinatario(id_destinatario, limit = 50, offset = 0, solo_no_leidos = false) {
     try {
       let query = `
@@ -75,7 +75,7 @@ class Mensaje {
                ur.email as remitente_email,
                ur.rol as remitente_rol
         FROM MENSAJES m
-        JOIN USUARIOS ur ON m.id_remitente = ur.id_usuario
+        JOIN usuariossS ur ON m.id_remitente = ur.id_usuarioss
         WHERE m.id_destinatario = ?
       `;
       const values = [id_destinatario];
@@ -94,7 +94,7 @@ class Mensaje {
     }
   }
 
-  // Obtener mensajes enviados por un usuario
+  // Obtener mensajes enviados por un usuarioss
   static async findByRemitente(id_remitente, limit = 50, offset = 0) {
     try {
       const query = `
@@ -103,7 +103,7 @@ class Mensaje {
                ud.email as destinatario_email,
                ud.rol as destinatario_rol
         FROM MENSAJES m
-        JOIN USUARIOS ud ON m.id_destinatario = ud.id_usuario
+        JOIN usuariossS ud ON m.id_destinatario = ud.id_usuarioss
         WHERE m.id_remitente = ?
         ORDER BY m.fecha_envio DESC
         LIMIT ? OFFSET ?
@@ -115,8 +115,8 @@ class Mensaje {
     }
   }
 
-  // Obtener conversación entre dos usuarios
-  static async getConversacion(id_usuario1, id_usuario2, limit = 50, offset = 0) {
+  // Obtener conversación entre dos usuariosss
+  static async getConversacion(id_usuarioss1, id_usuarioss2, limit = 50, offset = 0) {
     try {
       const query = `
         SELECT m.*, 
@@ -124,15 +124,15 @@ class Mensaje {
                ur.email as remitente_email,
                ur.rol as remitente_rol
         FROM MENSAJES m
-        JOIN USUARIOS ur ON m.id_remitente = ur.id_usuario
+        JOIN usuariossS ur ON m.id_remitente = ur.id_usuarioss
         WHERE (m.id_remitente = ? AND m.id_destinatario = ?) 
            OR (m.id_remitente = ? AND m.id_destinatario = ?)
         ORDER BY m.fecha_envio ASC
         LIMIT ? OFFSET ?
       `;
       const result = await executeQuery(query, [
-        id_usuario1, id_usuario2, 
-        id_usuario2, id_usuario1, 
+        id_usuarioss1, id_usuarioss2, 
+        id_usuarioss2, id_usuarioss1, 
         limit, offset
       ]);
       return result.map(mensaje => new Mensaje(mensaje));
@@ -168,7 +168,7 @@ class Mensaje {
   }
 
   // Obtener estadísticas de mensajes
-  static async getStats(id_usuario) {
+  static async getStats(id_usuarioss) {
     try {
       const query = `
         SELECT 
@@ -179,7 +179,7 @@ class Mensaje {
         FROM MENSAJES
         WHERE id_remitente = ? OR id_destinatario = ?
       `;
-      const result = await executeQuery(query, [id_usuario, id_usuario, id_usuario, id_usuario]);
+      const result = await executeQuery(query, [id_usuarioss, id_usuarioss, id_usuarioss, id_usuarioss]);
       return result[0];
     } catch (error) {
       throw error;
@@ -187,7 +187,7 @@ class Mensaje {
   }
 
   // Obtener contactos recientes
-  static async getContactosRecientes(id_usuario, limit = 20) {
+  static async getContactosRecientes(id_usuarioss, limit = 20) {
     try {
       const query = `
         SELECT DISTINCT
@@ -209,16 +209,16 @@ class Mensaje {
           END as rol_contacto,
           MAX(m.fecha_envio) as ultimo_mensaje
         FROM MENSAJES m
-        JOIN USUARIOS ur ON m.id_remitente = ur.id_usuario
-        JOIN USUARIOS ud ON m.id_destinatario = ud.id_usuario
+        JOIN usuariossS ur ON m.id_remitente = ur.id_usuarioss
+        JOIN usuariossS ud ON m.id_destinatario = ud.id_usuarioss
         WHERE m.id_remitente = ? OR m.id_destinatario = ?
         GROUP BY id_contacto
         ORDER BY ultimo_mensaje DESC
         LIMIT ?
       `;
       const result = await executeQuery(query, [
-        id_usuario, id_usuario, id_usuario, id_usuario, 
-        id_usuario, id_usuario, limit
+        id_usuarioss, id_usuarioss, id_usuarioss, id_usuarioss, 
+        id_usuarioss, id_usuarioss, limit
       ]);
       return result;
     } catch (error) {
@@ -227,15 +227,15 @@ class Mensaje {
   }
 
   // Buscar mensajes por contenido
-  static async searchByContent(id_usuario, searchTerm, limit = 50, offset = 0) {
+  static async searchByContent(id_usuarioss, searchTerm, limit = 50, offset = 0) {
     try {
       const query = `
         SELECT m.*, 
                ur.nombre as remitente_nombre,
                ud.nombre as destinatario_nombre
         FROM MENSAJES m
-        JOIN USUARIOS ur ON m.id_remitente = ur.id_usuario
-        JOIN USUARIOS ud ON m.id_destinatario = ud.id_usuario
+        JOIN usuariossS ur ON m.id_remitente = ur.id_usuarioss
+        JOIN usuariossS ud ON m.id_destinatario = ud.id_usuarioss
         WHERE (m.id_remitente = ? OR m.id_destinatario = ?)
           AND (m.contenido LIKE ? OR m.asunto LIKE ?)
         ORDER BY m.fecha_envio DESC
@@ -243,7 +243,7 @@ class Mensaje {
       `;
       const searchPattern = `%${searchTerm}%`;
       const result = await executeQuery(query, [
-        id_usuario, id_usuario, searchPattern, searchPattern, limit, offset
+        id_usuarioss, id_usuarioss, searchPattern, searchPattern, limit, offset
       ]);
       return result.map(mensaje => new Mensaje(mensaje));
     } catch (error) {

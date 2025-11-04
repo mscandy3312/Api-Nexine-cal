@@ -1,87 +1,87 @@
 const express = require('express');
 const router = express.Router();
-const clienteController = require('../controllers/clienteController');
+const clientesController = require('../controllers/clienteController');
 const { authenticateToken } = require('../middleware/auth');
 const { 
-  validateCliente, 
+  validateclientes, 
   validateParams, 
   validateQuery, 
   handleValidationErrors 
 } = require('../middleware/validation');
 
-// Crear cliente
+// Crear clientes
 router.post('/', 
   authenticateToken, 
-  validateCliente.crear, 
+  validateclientes.crear, 
   handleValidationErrors, 
-  clienteController.crearCliente
+  clientesController.crearclientes
 );
 
-// Obtener todos los clientes
+// Obtener todos los clientess
 router.get('/', 
   authenticateToken, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clienteController.obtenerClientes
+  clientesController.obtenerclientess
 );
 
-// Buscar clientes
+// Buscar clientess
 router.get('/buscar', 
   authenticateToken, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clienteController.buscarClientes
+  clientesController.buscarclientess
 );
 
-// Obtener cliente por ID
+// Obtener clientes por ID
 router.get('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  clienteController.obtenerClientePorId
+  clientesController.obtenerclientesPorId
 );
 
-// Obtener cliente por usuario
-router.get('/usuario/:userId', 
+// Obtener clientes por usuarioss
+router.get('/usuarioss/:userId', 
   authenticateToken, 
   validateParams.userId, 
   handleValidationErrors, 
-  clienteController.obtenerClientePorUsuario
+  clientesController.obtenerclientesPorusuarioss
 );
 
-// Actualizar cliente
+// Actualizar clientes
 router.put('/:id', 
   authenticateToken, 
   validateParams.id, 
-  validateCliente.crear, 
+  validateclientes.crear, 
   handleValidationErrors, 
-  clienteController.actualizarCliente
+  clientesController.actualizarclientes
 );
 
-// Obtener historial de sesiones del cliente
+// Obtener historial de sesiones del clientes
 router.get('/:id/sesiones', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clienteController.obtenerHistorialSesiones
+  clientesController.obtenerHistorialSesiones
 );
 
-// Obtener historial de citas del cliente
-router.get('/:id/citas', 
+// Obtener historial de citass del clientes
+router.get('/:id/citass', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clienteController.obtenerHistorialCitas
+  clientesController.obtenerHistorialcitass
 );
 
-// Eliminar cliente
+// Eliminar clientes
 router.delete('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  clienteController.eliminarCliente
+  clientesController.eliminarclientes
 );
 
 module.exports = router;

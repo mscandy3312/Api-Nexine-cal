@@ -1,8 +1,8 @@
-const Cita = require('../models/Cita');
+const citas = require('../models/citas');
 const { validationResult } = require('express-validator');
 
-// Crear cita
-const crearCita = async (req, res) => {
+// Crear citas
+const crearcitas = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -14,7 +14,7 @@ const crearCita = async (req, res) => {
     }
 
     const {
-      id_cliente,
+      id_clientes,
       id_profesional,
       id_precio,
       fecha,
@@ -22,8 +22,8 @@ const crearCita = async (req, res) => {
       notas
     } = req.body;
 
-    const nuevaCita = await Cita.create({
-      id_cliente,
+    const nuevacitas = await citas.create({
+      id_clientes,
       id_profesional,
       id_precio,
       fecha,
@@ -33,13 +33,13 @@ const crearCita = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Cita creada exitosamente',
+      message: 'citas creada exitosamente',
       data: {
-        cita: nuevaCita
+        citas: nuevacitas
       }
     });
   } catch (error) {
-    console.error('Error al crear cita:', error);
+    console.error('Error al crear citas:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -48,31 +48,60 @@ const crearCita = async (req, res) => {
   }
 };
 
-// Obtener todas las citas
-const obtenerCitas = async (req, res) => {
+// Obtener todas las citass
+const obtenercitass = async (req, res) => {
   try {
     const { limit = 50, offset = 0, estado, fecha, fecha_desde, fecha_hasta } = req.query;
     
-    let citas;
+    let citass;
     if (estado) {
-      citas = await Cita.findByEstado(estado, parseInt(limit), parseInt(offset));
+      citass = await citas.findByEstado(estado, parseInt(limit), parseInt(offset));
     } else if (fecha) {
-      citas = await Cita.findByFecha(fecha, parseInt(limit), parseInt(offset));
+      citass = await citas.findByFecha(fecha, parseInt(limit), parseInt(offset));
     } else if (fecha_desde && fecha_hasta) {
-      citas = await Cita.findByRangoFechas(fecha_desde, fecha_hasta, parseInt(limit), parseInt(offset));
+      citass = await citas.findByRangoFechas(fecha_desde, fecha_hasta, parseInt(limit), parseInt(offset));
     } else {
-      citas = await Cita.findAll(parseInt(limit), parseInt(offset));
+      citass = await citas.findAll(parseInt(limit), parseInt(offset));
     }
 
     res.json({
       success: true,
       data: {
-        citas,
+        citass,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: citas.length
+          total: citass.length
         }
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener citass:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: error.message
+    });
+  }
+};
+
+// Obtener citas por ID
+const obtenercitasPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const citas = await citas.findById(id);
+    
+    if (!citas) {
+      return res.status(404).json({
+        success: false,
+        message: 'citas no encontrada'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        citas
       }
     });
   } catch (error) {
@@ -85,57 +114,28 @@ const obtenerCitas = async (req, res) => {
   }
 };
 
-// Obtener cita por ID
-const obtenerCitaPorId = async (req, res) => {
+// Obtener citass por clientes
+const obtenercitassPorclientes = async (req, res) => {
   try {
-    const { id } = req.params;
-    const cita = await Cita.findById(id);
-    
-    if (!cita) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cita no encontrada'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        cita
-      }
-    });
-  } catch (error) {
-    console.error('Error al obtener cita:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor',
-      error: error.message
-    });
-  }
-};
-
-// Obtener citas por cliente
-const obtenerCitasPorCliente = async (req, res) => {
-  try {
-    const { id_cliente } = req.params;
+    const { id_clientes } = req.params;
     const { limit = 50, offset = 0 } = req.query;
     
-    const citas = await Cita.findByCliente(id_cliente, parseInt(limit), parseInt(offset));
+    const citass = await citas.findByclientes(id_clientes, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        citas,
-        id_cliente,
+        citass,
+        id_clientes,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: citas.length
+          total: citass.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener citas por cliente:', error);
+    console.error('Error al obtener citass por clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -144,28 +144,28 @@ const obtenerCitasPorCliente = async (req, res) => {
   }
 };
 
-// Obtener citas por profesional
-const obtenerCitasPorProfesional = async (req, res) => {
+// Obtener citass por profesional
+const obtenercitassPorProfesional = async (req, res) => {
   try {
     const { id_profesional } = req.params;
     const { limit = 50, offset = 0 } = req.query;
     
-    const citas = await Cita.findByProfesional(id_profesional, parseInt(limit), parseInt(offset));
+    const citass = await citas.findByProfesional(id_profesional, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        citas,
+        citass,
         id_profesional,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: citas.length
+          total: citass.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener citas por profesional:', error);
+    console.error('Error al obtener citass por profesional:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -174,8 +174,8 @@ const obtenerCitasPorProfesional = async (req, res) => {
   }
 };
 
-// Actualizar cita
-const actualizarCita = async (req, res) => {
+// Actualizar citas
+const actualizarcitas = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -187,17 +187,17 @@ const actualizarCita = async (req, res) => {
     }
 
     const { id } = req.params;
-    const cita = await Cita.findById(id);
+    const citas = await citas.findById(id);
     
-    if (!cita) {
+    if (!citas) {
       return res.status(404).json({
         success: false,
-        message: 'Cita no encontrada'
+        message: 'citas no encontrada'
       });
     }
 
     const {
-      id_cliente,
+      id_clientes,
       id_profesional,
       id_precio,
       fecha,
@@ -207,7 +207,7 @@ const actualizarCita = async (req, res) => {
     } = req.body;
 
     const datosActualizacion = {};
-    if (id_cliente) datosActualizacion.id_cliente = id_cliente;
+    if (id_clientes) datosActualizacion.id_clientes = id_clientes;
     if (id_profesional) datosActualizacion.id_profesional = id_profesional;
     if (id_precio !== undefined) datosActualizacion.id_precio = id_precio;
     if (fecha) datosActualizacion.fecha = fecha;
@@ -215,17 +215,17 @@ const actualizarCita = async (req, res) => {
     if (motivo !== undefined) datosActualizacion.motivo = motivo;
     if (notas !== undefined) datosActualizacion.notas = notas;
 
-    const citaActualizada = await cita.update(datosActualizacion);
+    const citasActualizada = await citas.update(datosActualizacion);
 
     res.json({
       success: true,
-      message: 'Cita actualizada exitosamente',
+      message: 'citas actualizada exitosamente',
       data: {
-        cita: citaActualizada
+        citas: citasActualizada
       }
     });
   } catch (error) {
-    console.error('Error al actualizar cita:', error);
+    console.error('Error al actualizar citas:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -234,31 +234,31 @@ const actualizarCita = async (req, res) => {
   }
 };
 
-// Cambiar estado de la cita
-const cambiarEstadoCita = async (req, res) => {
+// Cambiar estado de la citas
+const cambiarEstadocitas = async (req, res) => {
   try {
     const { id } = req.params;
     const { estado } = req.body;
     
-    const cita = await Cita.findById(id);
-    if (!cita) {
+    const citas = await citas.findById(id);
+    if (!citas) {
       return res.status(404).json({
         success: false,
-        message: 'Cita no encontrada'
+        message: 'citas no encontrada'
       });
     }
 
-    const citaActualizada = await cita.cambiarEstado(estado);
+    const citasActualizada = await citas.cambiarEstado(estado);
 
     res.json({
       success: true,
-      message: 'Estado de la cita actualizado exitosamente',
+      message: 'Estado de la citas actualizado exitosamente',
       data: {
-        cita: citaActualizada
+        citas: citasActualizada
       }
     });
   } catch (error) {
-    console.error('Error al cambiar estado de la cita:', error);
+    console.error('Error al cambiar estado de la citas:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -267,13 +267,13 @@ const cambiarEstadoCita = async (req, res) => {
   }
 };
 
-// Buscar citas
-const buscarCitas = async (req, res) => {
+// Buscar citass
+const buscarcitass = async (req, res) => {
   try {
     const { 
       limit = 50, 
       offset = 0, 
-      id_cliente, 
+      id_clientes, 
       id_profesional, 
       estado, 
       fecha_desde, 
@@ -282,28 +282,28 @@ const buscarCitas = async (req, res) => {
     } = req.query;
 
     const criterios = {};
-    if (id_cliente) criterios.id_cliente = id_cliente;
+    if (id_clientes) criterios.id_clientes = id_clientes;
     if (id_profesional) criterios.id_profesional = id_profesional;
     if (estado) criterios.estado = estado;
     if (fecha_desde) criterios.fecha_desde = fecha_desde;
     if (fecha_hasta) criterios.fecha_hasta = fecha_hasta;
     if (motivo) criterios.motivo = motivo;
 
-    const citas = await Cita.search(criterios, parseInt(limit), parseInt(offset));
+    const citass = await citas.search(criterios, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        citas,
+        citass,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: citas.length
+          total: citass.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al buscar citas:', error);
+    console.error('Error al buscar citass:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -312,12 +312,12 @@ const buscarCitas = async (req, res) => {
   }
 };
 
-// Obtener estadísticas de citas
-const obtenerEstadisticasCitas = async (req, res) => {
+// Obtener estadísticas de citass
+const obtenerEstadisticascitass = async (req, res) => {
   try {
     const { fecha_inicio, fecha_fin } = req.query;
     
-    const stats = await Cita.getStats(fecha_inicio, fecha_fin);
+    const stats = await citas.getStats(fecha_inicio, fecha_fin);
 
     res.json({
       success: true,
@@ -330,7 +330,7 @@ const obtenerEstadisticasCitas = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error al obtener estadísticas de citas:', error);
+    console.error('Error al obtener estadísticas de citass:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -339,27 +339,27 @@ const obtenerEstadisticasCitas = async (req, res) => {
   }
 };
 
-// Eliminar cita
-const eliminarCita = async (req, res) => {
+// Eliminar citas
+const eliminarcitas = async (req, res) => {
   try {
     const { id } = req.params;
-    const cita = await Cita.findById(id);
+    const citas = await citas.findById(id);
     
-    if (!cita) {
+    if (!citas) {
       return res.status(404).json({
         success: false,
-        message: 'Cita no encontrada'
+        message: 'citas no encontrada'
       });
     }
 
-    await cita.delete();
+    await citas.delete();
 
     res.json({
       success: true,
-      message: 'Cita eliminada exitosamente'
+      message: 'citas eliminada exitosamente'
     });
   } catch (error) {
-    console.error('Error al eliminar cita:', error);
+    console.error('Error al eliminar citas:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -369,14 +369,14 @@ const eliminarCita = async (req, res) => {
 };
 
 module.exports = {
-  crearCita,
-  obtenerCitas,
-  obtenerCitaPorId,
-  obtenerCitasPorCliente,
-  obtenerCitasPorProfesional,
-  actualizarCita,
-  cambiarEstadoCita,
-  buscarCitas,
-  obtenerEstadisticasCitas,
-  eliminarCita
+  crearcitas,
+  obtenercitass,
+  obtenercitasPorId,
+  obtenercitassPorclientes,
+  obtenercitassPorProfesional,
+  actualizarcitas,
+  cambiarEstadocitas,
+  buscarcitass,
+  obtenerEstadisticascitass,
+  eliminarcitas
 };

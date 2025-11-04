@@ -1,6 +1,6 @@
 # 📋 Scripts de Configuración de Base de Datos
 
-Este directorio contiene scripts para configurar la base de datos y crear usuarios administradores.
+Este directorio contiene scripts para configurar la base de datos y crear usuariosss administradores.
 
 ## 🗄️ Scripts Disponibles
 
@@ -14,28 +14,28 @@ node setup-database.js
 
 **Qué hace:**
 - Conecta al servidor MySQL
-- Crea la base de datos `sistema_citas` si no existe
+- Crea la base de datos `sistema_citass` si no existe
 - Ejecuta el esquema SQL (`database_schema.sql`)
 - Verifica que todas las tablas se crearon correctamente
 
 ### 2. `create-admin-user.js`
-Crea un usuario administrador en el sistema.
+Crea un usuarioss administrador en el sistema.
 
 **Uso:**
 ```bash
-# Crear nuevo usuario admin
+# Crear nuevo usuarioss admin
 node create-admin-user.js
 
-# Listar usuarios admin existentes
+# Listar usuariosss admin existentes
 node create-admin-user.js --list
 ```
 
 **Qué hace:**
 - Conecta a la base de datos
-- Verifica si ya existen usuarios admin
-- Solicita datos del nuevo usuario (email, nombre, contraseña, teléfono)
+- Verifica si ya existen usuariosss admin
+- Solicitas datos del nuevo usuarioss (email, nombre, contraseña, teléfono)
 - Encripta la contraseña con bcrypt
-- Crea el usuario con rol 'admin'
+- Crea el usuarioss con rol 'admin'
 
 ## ⚙️ Configuración Requerida
 
@@ -47,14 +47,14 @@ Crea un archivo `.env` en la raíz del proyecto:
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=tu_password
-DB_NAME=sistema_citas
+DB_NAME=sistema_citass
 DB_PORT=3306
 
 # Para AWS RDS
 # DB_HOST=tu-instancia-rds.xxxxx.us-east-1.rds.amazonaws.com
 # DB_USER=admin
 # DB_PASSWORD=tu_password_seguro
-# DB_NAME=sistema_citas
+# DB_NAME=sistema_citass
 # DB_PORT=3306
 # DB_SSL=true
 ```
@@ -65,14 +65,14 @@ DB_PORT=3306
 $env:DB_HOST="localhost"
 $env:DB_USER="root"
 $env:DB_PASSWORD="tu_password"
-$env:DB_NAME="sistema_citas"
+$env:DB_NAME="sistema_citass"
 $env:DB_PORT="3306"
 
 # Linux/Mac
 export DB_HOST="localhost"
 export DB_USER="root"
 export DB_PASSWORD="tu_password"
-export DB_NAME="sistema_citas"
+export DB_NAME="sistema_citass"
 export DB_PORT="3306"
 ```
 
@@ -81,7 +81,7 @@ export DB_PORT="3306"
 ### Paso 1: Configurar MySQL
 1. Instalar MySQL en tu sistema
 2. Iniciar el servicio MySQL
-3. Crear un usuario con permisos (o usar root)
+3. Crear un usuarioss con permisos (o usar root)
 
 ### Paso 2: Configurar variables de entorno
 ```bash
@@ -95,7 +95,7 @@ cp env.example .env
 node setup-database.js
 ```
 
-### Paso 4: Crear usuario administrador
+### Paso 4: Crear usuarioss administrador
 ```bash
 node create-admin-user.js
 ```
@@ -109,14 +109,14 @@ npm start
 
 ### Error: "Access denied for user 'root'@'localhost'"
 - Verificar que MySQL esté ejecutándose
-- Verificar usuario y contraseña en .env
-- Verificar que el usuario tenga permisos
+- Verificar usuarioss y contraseña en .env
+- Verificar que el usuarioss tenga permisos
 
-### Error: "Unknown database 'sistema_citas'"
+### Error: "Unknown database 'sistema_citass'"
 - Ejecutar `node setup-database.js` primero
 - Verificar que el nombre de la base de datos sea correcto
 
-### Error: "Table 'USUARIOS' doesn't exist"
+### Error: "Table 'usuariossS' doesn't exist"
 - Ejecutar `node setup-database.js` para crear las tablas
 - Verificar que `database_schema.sql` existe
 
@@ -132,7 +132,7 @@ npm start
 node -e "const { testConnection } = require('./config/database'); testConnection().then(result => console.log('Conexión:', result))"
 ```
 
-### Verificar usuarios admin:
+### Verificar usuariosss admin:
 ```bash
 node create-admin-user.js --list
 ```
@@ -146,7 +146,7 @@ npm start
 ## 🔐 Seguridad
 
 - Las contraseñas se encriptan con bcrypt (12 rounds)
-- Los usuarios admin tienen email verificado por defecto
+- Los usuariosss admin tienen email verificado por defecto
 - Se recomienda usar contraseñas seguras
 - Para producción, usar variables de entorno del sistema
 
@@ -154,5 +154,5 @@ npm start
 
 - El script `create-admin-user.js` es interactivo
 - Se puede ejecutar múltiples veces para crear varios admins
-- Los usuarios admin se crean con `activo=1` y `email_verificado=1`
+- Los usuariosss admin se crean con `activo=1` y `email_verificado=1`
 - El script verifica duplicados por email

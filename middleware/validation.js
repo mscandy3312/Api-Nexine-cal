@@ -1,7 +1,7 @@
 const { body, param, query, validationResult } = require('express-validator');
 
-// Validaciones para usuarios
-const validateUsuario = {
+// Validaciones para usuariosss
+const validateusuarioss = {
   registro: [
     body('email')
       .isEmail()
@@ -17,8 +17,21 @@ const validateUsuario = {
       .withMessage('El nombre debe tener entre 2 y 100 caracteres'),
     body('rol')
       .optional()
-      .isIn(['admin', 'profesional', 'cliente'])
+      .isIn(['admin', 'profesional', 'cliente']) // <-- Corregido a 'cliente'
       .withMessage('El rol debe ser admin, profesional o cliente')
+  ],
+  
+  // --- ¡NUEVA REGLA AÑADIDA! ---
+  // Esta regla es la que faltaba y causaba el error
+  verificarCodigo: [
+    body('email')
+      .isEmail()
+      .withMessage('Debe ser un email válido')
+      .normalizeEmail(),
+    body('codigo')
+      .isString()
+      .isLength({ min: 6, max: 6 })
+      .withMessage('El código debe tener 6 dígitos')
   ],
   
   login: [
@@ -43,7 +56,7 @@ const validateUsuario = {
       .normalizeEmail(),
     body('rol')
       .optional()
-      .isIn(['admin', 'profesional', 'cliente'])
+      .isIn(['admin', 'profesional', 'cliente']) // <-- Corregido a 'cliente'
       .withMessage('El rol debe ser admin, profesional o cliente')
   ],
   
@@ -60,9 +73,9 @@ const validateUsuario = {
 // Validaciones para profesionales
 const validateProfesional = {
   crear: [
-    body('id_usuario')
+    body('id_usuarioss')
       .isInt({ min: 1 })
-      .withMessage('ID de usuario debe ser un número entero positivo'),
+      .withMessage('ID de usuarioss debe ser un número entero positivo'),
     body('nombre_completo')
       .notEmpty()
       .withMessage('El nombre completo es requerido')
@@ -91,12 +104,12 @@ const validateProfesional = {
   ]
 };
 
-// Validaciones para clientes
-const validateCliente = {
+// Validaciones para clientess
+const validateclientes = {
   crear: [
-    body('id_usuario')
+    body('id_usuarioss')
       .isInt({ min: 1 })
-      .withMessage('ID de usuario debe ser un número entero positivo'),
+      .withMessage('ID de usuarioss debe ser un número entero positivo'),
     body('nombre_completo')
       .notEmpty()
       .withMessage('El nombre completo es requerido')
@@ -106,10 +119,10 @@ const validateCliente = {
       .optional()
       .isLength({ max: 20 })
       .withMessage('El teléfono no puede tener más de 20 caracteres'),
-    body('nombre_usuario')
+    body('nombre_usuarioss')
       .optional()
       .isLength({ min: 3, max: 50 })
-      .withMessage('El nombre de usuario debe tener entre 3 y 50 caracteres'),
+      .withMessage('El nombre de usuarioss debe tener entre 3 y 50 caracteres'),
     body('ciudad')
       .optional()
       .isLength({ max: 100 })
@@ -155,12 +168,12 @@ const validatePrecio = {
   ]
 };
 
-// Validaciones para citas
-const validateCita = {
+// Validaciones para citass
+const validatecitas = {
   crear: [
-    body('id_cliente')
+    body('id_clientes')
       .isInt({ min: 1 })
-      .withMessage('ID de cliente debe ser un número entero positivo'),
+      .withMessage('ID de clientes debe ser un número entero positivo'),
     body('id_profesional')
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo'),
@@ -185,19 +198,19 @@ const validateCita = {
 // Validaciones para sesiones
 const validateSesion = {
   crear: [
-    body('id_cliente')
+    body('id_clientes')
       .isInt({ min: 1 })
-      .withMessage('ID de cliente debe ser un número entero positivo'),
+      .withMessage('ID de clientes debe ser un número entero positivo'),
     body('id_profesional')
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo'),
     body('id_precio')
       .isInt({ min: 1 })
       .withMessage('ID de precio debe ser un número entero positivo'),
-    body('id_cita')
+    body('id_citas')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('ID de cita debe ser un número entero positivo'),
+      .withMessage('ID de citas debe ser un número entero positivo'),
     body('numero_pedido')
       .optional()
       .isLength({ max: 100 })
@@ -325,7 +338,7 @@ const validateParams = {
   userId: [
     param('userId')
       .isInt({ min: 1 })
-      .withMessage('El ID de usuario debe ser un número entero positivo')
+      .withMessage('El ID de usuarioss debe ser un número entero positivo')
   ]
 };
 
@@ -397,7 +410,7 @@ const validateMensaje = {
       .withMessage('El contenido no puede tener más de 2000 caracteres'),
     body('tipo_mensaje')
       .optional()
-      .isIn(['general', 'cita', 'sesion', 'pago', 'soporte'])
+      .isIn(['general', 'citas', 'sesion', 'pago', 'soporte'])
       .withMessage('Tipo de mensaje no válido'),
     body('prioridad')
       .optional()
@@ -428,9 +441,9 @@ const validateDocumento = {
 // Validaciones para notificaciones
 const validateNotificacion = {
   crear: [
-    body('id_usuario')
+    body('id_usuarioss')
       .isInt({ min: 1 })
-      .withMessage('ID de usuario debe ser un número entero positivo'),
+      .withMessage('ID de usuarioss debe ser un número entero positivo'),
     body('tipo_notificacion')
       .notEmpty()
       .withMessage('El tipo de notificación es requerido')
@@ -456,12 +469,12 @@ const validateNotificacion = {
       .withMessage('Canal no válido')
   ],
   masiva: [
-    body('usuarios')
+    body('usuariosss')
       .isArray({ min: 1 })
-      .withMessage('Se requiere un array de usuarios'),
-    body('usuarios.*')
+      .withMessage('Se requiere un array de usuariosss'),
+    body('usuariosss.*')
       .isInt({ min: 1 })
-      .withMessage('Cada usuario debe ser un ID válido'),
+      .withMessage('Cada usuarioss debe ser un ID válido'),
     body('tipo_notificacion')
       .notEmpty()
       .withMessage('El tipo de notificación es requerido'),
@@ -482,10 +495,10 @@ const validateParamsExtended = {
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo')
   ],
-  idUsuario: [
-    param('id_usuario2')
+  idusuarioss: [
+    param('id_usuarioss2')
       .isInt({ min: 1 })
-      .withMessage('ID de usuario debe ser un número entero positivo')
+      .withMessage('ID de usuarioss debe ser un número entero positivo')
   ],
   tipoDocumento: [
     param('tipo_documento')
@@ -510,11 +523,11 @@ const validateParamsExtended = {
 };
 
 module.exports = {
-  validateUsuario,
+  validateusuarioss, // <-- Exporta el nombre correcto (plural)
   validateProfesional,
-  validateCliente,
+  validateclientes,
   validatePrecio,
-  validateCita,
+  validatecitas,
   validateSesion,
   validateValoracion,
   validatePago,
@@ -527,3 +540,4 @@ module.exports = {
   validateQuery,
   handleValidationErrors
 };
+

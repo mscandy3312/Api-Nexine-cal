@@ -3,7 +3,7 @@ const { executeQuery } = require('../config/database');
 class Notificacion {
   constructor(data) {
     this.id_notificacion = data.id_notificacion;
-    this.id_usuario = data.id_usuario;
+    this.id_usuarioss = data.id_usuarioss;
     this.tipo_notificacion = data.tipo_notificacion;
     this.titulo = data.titulo;
     this.mensaje = data.mensaje;
@@ -20,7 +20,7 @@ class Notificacion {
   static async create(notificacionData) {
     try {
       const {
-        id_usuario,
+        id_usuarioss,
         tipo_notificacion,
         titulo,
         mensaje,
@@ -31,13 +31,13 @@ class Notificacion {
 
       const query = `
         INSERT INTO NOTIFICACIONES (
-          id_usuario, tipo_notificacion, titulo, mensaje, 
+          id_usuarioss, tipo_notificacion, titulo, mensaje, 
           datos_adicionales, prioridad, canal
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await executeQuery(query, [
-        id_usuario,
+        id_usuarioss,
         tipo_notificacion,
         titulo,
         mensaje,
@@ -52,8 +52,8 @@ class Notificacion {
     }
   }
 
-  // Crear notificación masiva para múltiples usuarios
-  static async createMasiva(usuarios, notificacionData) {
+  // Crear notificación masiva para múltiples usuariosss
+  static async createMasiva(usuariosss, notificacionData) {
     try {
       const {
         tipo_notificacion,
@@ -67,10 +67,10 @@ class Notificacion {
       const values = [];
       const placeholders = [];
 
-      usuarios.forEach(id_usuario => {
+      usuariosss.forEach(id_usuarioss => {
         placeholders.push('(?, ?, ?, ?, ?, ?, ?)');
         values.push(
-          id_usuario,
+          id_usuarioss,
           tipo_notificacion,
           titulo,
           mensaje,
@@ -82,7 +82,7 @@ class Notificacion {
 
       const query = `
         INSERT INTO NOTIFICACIONES (
-          id_usuario, tipo_notificacion, titulo, mensaje, 
+          id_usuarioss, tipo_notificacion, titulo, mensaje, 
           datos_adicionales, prioridad, canal
         ) VALUES ${placeholders.join(', ')}
       `;
@@ -99,10 +99,10 @@ class Notificacion {
     try {
       const query = `
         SELECT n.*, 
-               u.nombre as usuario_nombre,
-               u.email as usuario_email
+               u.nombre as usuarioss_nombre,
+               u.email as usuarioss_email
         FROM NOTIFICACIONES n
-        JOIN USUARIOS u ON n.id_usuario = u.id_usuario
+        JOIN usuariossS u ON n.id_usuarioss = u.id_usuarioss
         WHERE n.id_notificacion = ?
       `;
       const result = await executeQuery(query, [id]);
@@ -112,18 +112,18 @@ class Notificacion {
     }
   }
 
-  // Obtener notificaciones de un usuario
-  static async findByUsuario(id_usuario, limit = 50, offset = 0, solo_no_leidas = false) {
+  // Obtener notificaciones de un usuarioss
+  static async findByusuarioss(id_usuarioss, limit = 50, offset = 0, solo_no_leidas = false) {
     try {
       let query = `
         SELECT n.*, 
-               u.nombre as usuario_nombre,
-               u.email as usuario_email
+               u.nombre as usuarioss_nombre,
+               u.email as usuarioss_email
         FROM NOTIFICACIONES n
-        JOIN USUARIOS u ON n.id_usuario = u.id_usuario
-        WHERE n.id_usuario = ?
+        JOIN usuariossS u ON n.id_usuarioss = u.id_usuarioss
+        WHERE n.id_usuarioss = ?
       `;
-      const values = [id_usuario];
+      const values = [id_usuarioss];
 
       if (solo_no_leidas) {
         query += ' AND n.leida = false';
@@ -144,10 +144,10 @@ class Notificacion {
     try {
       const query = `
         SELECT n.*, 
-               u.nombre as usuario_nombre,
-               u.email as usuario_email
+               u.nombre as usuarioss_nombre,
+               u.email as usuarioss_email
         FROM NOTIFICACIONES n
-        JOIN USUARIOS u ON n.id_usuario = u.id_usuario
+        JOIN usuariossS u ON n.id_usuarioss = u.id_usuarioss
         WHERE n.tipo_notificacion = ?
         ORDER BY n.fecha_creacion DESC
         LIMIT ? OFFSET ?
@@ -164,10 +164,10 @@ class Notificacion {
     try {
       const query = `
         SELECT n.*, 
-               u.nombre as usuario_nombre,
-               u.email as usuario_email
+               u.nombre as usuarioss_nombre,
+               u.email as usuarioss_email
         FROM NOTIFICACIONES n
-        JOIN USUARIOS u ON n.id_usuario = u.id_usuario
+        JOIN usuariossS u ON n.id_usuarioss = u.id_usuarioss
         WHERE n.prioridad = ?
         ORDER BY n.fecha_creacion DESC
         LIMIT ? OFFSET ?
@@ -214,15 +214,15 @@ class Notificacion {
     }
   }
 
-  // Marcar todas las notificaciones de un usuario como leídas
-  static async marcarTodasComoLeidas(id_usuario) {
+  // Marcar todas las notificaciones de un usuarioss como leídas
+  static async marcarTodasComoLeidas(id_usuarioss) {
     try {
       const query = `
         UPDATE NOTIFICACIONES 
         SET leida = true, fecha_lectura = NOW() 
-        WHERE id_usuario = ? AND leida = false
+        WHERE id_usuarioss = ? AND leida = false
       `;
-      const result = await executeQuery(query, [id_usuario]);
+      const result = await executeQuery(query, [id_usuarioss]);
       return result.affectedRows;
     } catch (error) {
       throw error;
@@ -230,7 +230,7 @@ class Notificacion {
   }
 
   // Obtener estadísticas de notificaciones
-  static async getStats(id_usuario = null) {
+  static async getStats(id_usuarioss = null) {
     try {
       let query = `
         SELECT 
@@ -244,9 +244,9 @@ class Notificacion {
       `;
       const values = [];
 
-      if (id_usuario) {
-        query += ' AND id_usuario = ?';
-        values.push(id_usuario);
+      if (id_usuarioss) {
+        query += ' AND id_usuarioss = ?';
+        values.push(id_usuarioss);
       }
 
       const result = await executeQuery(query, values);
@@ -282,10 +282,10 @@ class Notificacion {
     try {
       const query = `
         SELECT n.*, 
-               u.nombre as usuario_nombre,
-               u.email as usuario_email
+               u.nombre as usuarioss_nombre,
+               u.email as usuarioss_email
         FROM NOTIFICACIONES n
-        JOIN USUARIOS u ON n.id_usuario = u.id_usuario
+        JOIN usuariossS u ON n.id_usuarioss = u.id_usuarioss
         WHERE n.estado = 'activa'
         ORDER BY n.fecha_creacion DESC
         LIMIT ?
@@ -302,10 +302,10 @@ class Notificacion {
     try {
       const query = `
         SELECT n.*, 
-               u.nombre as usuario_nombre,
-               u.email as usuario_email
+               u.nombre as usuarioss_nombre,
+               u.email as usuarioss_email
         FROM NOTIFICACIONES n
-        JOIN USUARIOS u ON n.id_usuario = u.id_usuario
+        JOIN usuariossS u ON n.id_usuarioss = u.id_usuarioss
         WHERE (n.titulo LIKE ? OR n.mensaje LIKE ?)
           AND n.estado = 'activa'
         ORDER BY n.fecha_creacion DESC
@@ -418,22 +418,22 @@ class Notificacion {
   static async crearNotificacionEvento(evento, datos) {
     try {
       const tiposEvento = {
-        'cita_creada': {
-          tipo: 'cita',
-          titulo: 'Nueva cita programada',
-          mensaje: 'Se ha programado una nueva cita para el {fecha}',
+        'citas_creada': {
+          tipo: 'citas',
+          titulo: 'Nueva citas programada',
+          mensaje: 'Se ha programado una nueva citas para el {fecha}',
           prioridad: 'normal'
         },
-        'cita_confirmada': {
-          tipo: 'cita',
-          titulo: 'Cita confirmada',
-          mensaje: 'Tu cita del {fecha} ha sido confirmada',
+        'citas_confirmada': {
+          tipo: 'citas',
+          titulo: 'citas confirmada',
+          mensaje: 'Tu citas del {fecha} ha sido confirmada',
           prioridad: 'normal'
         },
-        'cita_cancelada': {
-          tipo: 'cita',
-          titulo: 'Cita cancelada',
-          mensaje: 'La cita del {fecha} ha sido cancelada',
+        'citas_cancelada': {
+          tipo: 'citas',
+          titulo: 'citas cancelada',
+          mensaje: 'La citas del {fecha} ha sido cancelada',
           prioridad: 'media'
         },
         'sesion_completada': {
@@ -474,7 +474,7 @@ class Notificacion {
       });
 
       return await this.create({
-        id_usuario: datos.id_usuario,
+        id_usuarioss: datos.id_usuarioss,
         tipo_notificacion: configEvento.tipo,
         titulo: configEvento.titulo,
         mensaje: mensaje,

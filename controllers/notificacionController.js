@@ -1,4 +1,4 @@
-const Notificacion = require('../models/Notificacion');
+const Notificacion = require('../models/notificaciones');
 const { validationResult } = require('express-validator');
 
 // Crear notificación
@@ -14,7 +14,7 @@ const crearNotificacion = async (req, res) => {
     }
 
     const { 
-      id_usuario, 
+      id_usuarioss, 
       tipo_notificacion, 
       titulo, 
       mensaje, 
@@ -24,7 +24,7 @@ const crearNotificacion = async (req, res) => {
     } = req.body;
 
     const notificacion = await Notificacion.create({
-      id_usuario,
+      id_usuarioss,
       tipo_notificacion,
       titulo,
       mensaje,
@@ -63,7 +63,7 @@ const crearNotificacionMasiva = async (req, res) => {
     }
 
     const { 
-      usuarios, 
+      usuariosss, 
       tipo_notificacion, 
       titulo, 
       mensaje, 
@@ -72,14 +72,14 @@ const crearNotificacionMasiva = async (req, res) => {
       canal 
     } = req.body;
 
-    if (!Array.isArray(usuarios) || usuarios.length === 0) {
+    if (!Array.isArray(usuariosss) || usuariosss.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Se requiere un array de usuarios'
+        message: 'Se requiere un array de usuariosss'
       });
     }
 
-    const notificacionesCreadas = await Notificacion.createMasiva(usuarios, {
+    const notificacionesCreadas = await Notificacion.createMasiva(usuariosss, {
       tipo_notificacion,
       titulo,
       mensaje,
@@ -93,7 +93,7 @@ const crearNotificacionMasiva = async (req, res) => {
       message: 'Notificaciones masivas creadas exitosamente',
       data: {
         notificacionesCreadas,
-        totalUsuarios: usuarios.length
+        totalusuariosss: usuariosss.length
       }
     });
   } catch (error) {
@@ -106,14 +106,14 @@ const crearNotificacionMasiva = async (req, res) => {
   }
 };
 
-// Obtener notificaciones del usuario
-const obtenerNotificacionesUsuario = async (req, res) => {
+// Obtener notificaciones del usuarioss
+const obtenerNotificacionesusuarioss = async (req, res) => {
   try {
     const { limit = 50, offset = 0, solo_no_leidas = false } = req.query;
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
-    const notificaciones = await Notificacion.findByUsuario(
-      id_usuario, 
+    const notificaciones = await Notificacion.findByusuarioss(
+      id_usuarioss, 
       parseInt(limit), 
       parseInt(offset), 
       solo_no_leidas === 'true'
@@ -131,7 +131,7 @@ const obtenerNotificacionesUsuario = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error al obtener notificaciones del usuario:', error);
+    console.error('Error al obtener notificaciones del usuarioss:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -221,8 +221,8 @@ const marcarComoLeida = async (req, res) => {
       });
     }
 
-    // Verificar que el usuario es el destinatario
-    if (notificacion.id_usuario !== req.user.id_usuario) {
+    // Verificar que el usuarioss es el destinatario
+    if (notificacion.id_usuarioss !== req.user.id_usuarioss) {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para marcar esta notificación como leída'
@@ -279,9 +279,9 @@ const marcarComoLeidas = async (req, res) => {
 // Marcar todas las notificaciones como leídas
 const marcarTodasComoLeidas = async (req, res) => {
   try {
-    const id_usuario = req.user.id_usuario;
+    const id_usuarioss = req.user.id_usuarioss;
 
-    const notificacionesLeidas = await Notificacion.marcarTodasComoLeidas(id_usuario);
+    const notificacionesLeidas = await Notificacion.marcarTodasComoLeidas(id_usuarioss);
 
     res.json({
       success: true,
@@ -303,15 +303,15 @@ const marcarTodasComoLeidas = async (req, res) => {
 // Obtener estadísticas de notificaciones
 const obtenerEstadisticasNotificaciones = async (req, res) => {
   try {
-    const { id_usuario } = req.query;
+    const { id_usuarioss } = req.query;
     
-    const stats = await Notificacion.getStats(id_usuario);
+    const stats = await Notificacion.getStats(id_usuarioss);
 
     res.json({
       success: true,
       data: {
         estadisticas: stats,
-        id_usuario
+        id_usuarioss
       }
     });
   } catch (error) {
@@ -423,8 +423,8 @@ const obtenerNotificacionPorId = async (req, res) => {
       });
     }
 
-    // Verificar que el usuario tiene acceso a la notificación
-    if (notificacion.id_usuario !== req.user.id_usuario) {
+    // Verificar que el usuarioss tiene acceso a la notificación
+    if (notificacion.id_usuarioss !== req.user.id_usuarioss) {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para ver esta notificación'
@@ -468,8 +468,8 @@ const actualizarNotificacion = async (req, res) => {
       });
     }
 
-    // Verificar permisos (solo admin puede actualizar notificaciones de otros usuarios)
-    if (notificacion.id_usuario !== req.user.id_usuario && req.user.rol !== 'admin') {
+    // Verificar permisos (solo admin puede actualizar notificaciones de otros usuariosss)
+    if (notificacion.id_usuarioss !== req.user.id_usuarioss && req.user.rol !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para actualizar esta notificación'
@@ -518,7 +518,7 @@ const archivarNotificacion = async (req, res) => {
     }
 
     // Verificar permisos
-    if (notificacion.id_usuario !== req.user.id_usuario && req.user.rol !== 'admin') {
+    if (notificacion.id_usuarioss !== req.user.id_usuarioss && req.user.rol !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para archivar esta notificación'
@@ -579,7 +579,7 @@ const eliminarNotificacion = async (req, res) => {
     }
 
     // Verificar permisos
-    if (notificacion.id_usuario !== req.user.id_usuario && req.user.rol !== 'admin') {
+    if (notificacion.id_usuarioss !== req.user.id_usuarioss && req.user.rol !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'No tienes permisos para eliminar esta notificación'
@@ -636,7 +636,7 @@ const crearNotificacionEvento = async (req, res) => {
 module.exports = {
   crearNotificacion,
   crearNotificacionMasiva,
-  obtenerNotificacionesUsuario,
+  obtenerNotificacionesusuarioss,
   obtenerNotificacionesPorTipo,
   obtenerNotificacionesPorPrioridad,
   marcarComoLeida,

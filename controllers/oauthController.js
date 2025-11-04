@@ -14,7 +14,7 @@ const { validationResult } = require('express-validator');
 
 /**
  * Login/Registro con Google OAuth
- * Permite a los usuarios autenticarse usando su cuenta de Google
+ * Permite a los usuariosss autenticarse usando su cuenta de Google
  * @param {Object} req - Request object con token de Google
  * @param {Object} res - Response object
  */
@@ -36,14 +36,14 @@ const loginConGoogle = async (req, res) => {
     // Llamar al servicio OAuth para procesar el login con Google
     const resultado = await oauthService.loginConGoogle(token);
 
-    // Responder con éxito y datos del usuario
+    // Responder con éxito y datos del usuarioss
     res.json({
       success: true,
-      message: resultado.esNuevoUsuario ? 'Usuario registrado exitosamente' : 'Login exitoso',
+      message: resultado.esNuevousuarioss ? 'usuarioss registrado exitosamente' : 'Login exitoso',
       data: {
-        usuario: resultado.usuario,
+        usuarioss: resultado.usuarioss,
         token: resultado.token,
-        esNuevoUsuario: resultado.esNuevoUsuario
+        esNuevousuarioss: resultado.esNuevousuarioss
       }
     });
   } catch (error) {
@@ -59,7 +59,7 @@ const loginConGoogle = async (req, res) => {
 
 /**
  * Login/Registro con WhatsApp OAuth
- * Permite a los usuarios autenticarse usando WhatsApp
+ * Permite a los usuariosss autenticarse usando WhatsApp
  * @param {Object} req - Request object con token y número de teléfono
  * @param {Object} res - Response object
  */
@@ -80,11 +80,11 @@ const loginConWhatsApp = async (req, res) => {
 
     res.json({
       success: true,
-      message: resultado.esNuevoUsuario ? 'Usuario registrado exitosamente' : 'Login exitoso',
+      message: resultado.esNuevousuarioss ? 'usuarioss registrado exitosamente' : 'Login exitoso',
       data: {
-        usuario: resultado.usuario,
+        usuarioss: resultado.usuarioss,
         token: resultado.token,
-        esNuevoUsuario: resultado.esNuevoUsuario
+        esNuevousuarioss: resultado.esNuevousuarioss
       }
     });
   } catch (error) {
@@ -99,8 +99,8 @@ const loginConWhatsApp = async (req, res) => {
 
 /**
  * Vincular cuenta OAuth adicional
- * Permite a un usuario autenticado vincular una cuenta OAuth adicional
- * @param {Object} req - Request object con datos del usuario autenticado
+ * Permite a un usuarioss autenticado vincular una cuenta OAuth adicional
+ * @param {Object} req - Request object con datos del usuarioss autenticado
  * @param {Object} res - Response object
  */
 const vincularOAuth = async (req, res) => {
@@ -115,15 +115,15 @@ const vincularOAuth = async (req, res) => {
     }
 
     const { proveedor, token } = req.body;
-    const idUsuario = req.user.id_usuario;
+    const idusuarioss = req.user.id_usuarioss;
 
-    const resultado = await oauthService.vincularOAuth(idUsuario, proveedor, token);
+    const resultado = await oauthService.vincularOAuth(idusuarioss, proveedor, token);
 
     res.json({
       success: true,
       message: resultado.message,
       data: {
-        usuario: resultado.usuario
+        usuarioss: resultado.usuarioss
       }
     });
   } catch (error) {
@@ -138,22 +138,22 @@ const vincularOAuth = async (req, res) => {
 
 /**
  * Desvincular cuenta OAuth
- * Permite a un usuario autenticado desvincular su cuenta OAuth
- * @param {Object} req - Request object con datos del usuario autenticado
+ * Permite a un usuarioss autenticado desvincular su cuenta OAuth
+ * @param {Object} req - Request object con datos del usuarioss autenticado
  * @param {Object} res - Response object
  */
 const desvincularOAuth = async (req, res) => {
   try {
     const { proveedor } = req.params;
-    const idUsuario = req.user.id_usuario;
+    const idusuarioss = req.user.id_usuarioss;
 
-    const resultado = await oauthService.desvincularOAuth(idUsuario, proveedor);
+    const resultado = await oauthService.desvincularOAuth(idusuarioss, proveedor);
 
     res.json({
       success: true,
       message: resultado.message,
       data: {
-        usuario: resultado.usuario
+        usuarioss: resultado.usuarioss
       }
     });
   } catch (error) {
@@ -167,16 +167,16 @@ const desvincularOAuth = async (req, res) => {
 };
 
 /**
- * Obtener información OAuth del usuario
- * Devuelve información sobre las cuentas OAuth vinculadas del usuario
- * @param {Object} req - Request object con datos del usuario autenticado
+ * Obtener información OAuth del usuarioss
+ * Devuelve información sobre las cuentas OAuth vinculadas del usuarioss
+ * @param {Object} req - Request object con datos del usuarioss autenticado
  * @param {Object} res - Response object
  */
 const obtenerInfoOAuth = async (req, res) => {
   try {
-    const idUsuario = req.user.id_usuario;
+    const idusuarioss = req.user.id_usuarioss;
 
-    const infoOAuth = await oauthService.obtenerInfoOAuth(idUsuario);
+    const infoOAuth = await oauthService.obtenerInfoOAuth(idusuarioss);
 
     res.json({
       success: true,
@@ -251,7 +251,7 @@ module.exports = {
   loginConWhatsApp,      // Login con WhatsApp OAuth
   vincularOAuth,         // Vincular cuenta OAuth adicional
   desvincularOAuth,       // Desvincular cuenta OAuth
-  obtenerInfoOAuth,      // Obtener información OAuth del usuario
+  obtenerInfoOAuth,      // Obtener información OAuth del usuarioss
   verificarEstadoOAuth   // Verificar estado de configuración OAuth
 };
 

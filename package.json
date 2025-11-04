@@ -1,7 +1,7 @@
 {
   "name": "api-calendario-terapeutico",
   "version": "1.0.0",
-  "description": "API para sistema de calendario terapéutico con gestión de profesionales, clientes, citas y sesiones",
+  "description": "API para sistema de calendario terapéutico con gestión de profesionales, clientess, citass y sesiones",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,7 +12,7 @@
     "api",
     "terapia",
     "calendario",
-    "citas",
+    "citass",
     "profesionales"
   ],
   "author": "Tu Nombre",
@@ -21,17 +21,19 @@
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "express-rate-limit": "^6.10.0",
     "express-validator": "^7.0.1",
     "google-auth-library": "^9.0.0",
-    "helmet": "^7.0.0",
+    "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.15.2"
+    "mysql2": "^3.15.2",
+    "nodemailer": "^7.0.10"
   },
   "devDependencies": {
     "jest": "^29.6.2",

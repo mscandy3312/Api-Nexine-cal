@@ -1,4 +1,4 @@
-const Favorito = require('../models/Favorito');
+const Favorito = require('../models/favoritos');
 const { validationResult } = require('express-validator');
 
 // Agregar profesional a favoritos
@@ -14,10 +14,10 @@ const agregarFavorito = async (req, res) => {
     }
 
     const { id_profesional } = req.body;
-    const id_cliente = req.user.id_cliente || req.user.id; // Asumiendo que el usuario tiene id_cliente
+    const id_clientes = req.user.id_clientes || req.user.id; // Asumiendo que el usuarioss tiene id_clientes
 
     const favorito = await Favorito.create({
-      id_cliente,
+      id_clientes,
       id_profesional
     });
 
@@ -38,13 +38,13 @@ const agregarFavorito = async (req, res) => {
   }
 };
 
-// Obtener favoritos de un cliente
+// Obtener favoritos de un clientes
 const obtenerFavoritos = async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
-    const id_cliente = req.user.id_cliente || req.user.id;
+    const id_clientes = req.user.id_clientes || req.user.id;
 
-    const favoritos = await Favorito.findByCliente(id_cliente, parseInt(limit), parseInt(offset));
+    const favoritos = await Favorito.findByclientes(id_clientes, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
@@ -71,15 +71,15 @@ const obtenerFavoritos = async (req, res) => {
 const verificarFavorito = async (req, res) => {
   try {
     const { id_profesional } = req.params;
-    const id_cliente = req.user.id_cliente || req.user.id;
+    const id_clientes = req.user.id_clientes || req.user.id;
 
-    const esFavorito = await Favorito.isFavorito(id_cliente, id_profesional);
+    const esFavorito = await Favorito.isFavorito(id_clientes, id_profesional);
 
     res.json({
       success: true,
       data: {
         esFavorito,
-        id_cliente,
+        id_clientes,
         id_profesional
       }
     });
@@ -93,28 +93,28 @@ const verificarFavorito = async (req, res) => {
   }
 };
 
-// Obtener clientes que tienen como favorito a un profesional
-const obtenerClientesFavoritos = async (req, res) => {
+// Obtener clientess que tienen como favorito a un profesional
+const obtenerclientessFavoritos = async (req, res) => {
   try {
     const { id_profesional } = req.params;
     const { limit = 50, offset = 0 } = req.query;
 
-    const clientes = await Favorito.findByProfesional(id_profesional, parseInt(limit), parseInt(offset));
+    const clientess = await Favorito.findByProfesional(id_profesional, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        clientes,
+        clientess,
         id_profesional,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: clientes.length
+          total: clientess.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener clientes favoritos:', error);
+    console.error('Error al obtener clientess favoritos:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -175,9 +175,9 @@ const obtenerTopFavoritos = async (req, res) => {
 const eliminarFavorito = async (req, res) => {
   try {
     const { id_profesional } = req.params;
-    const id_cliente = req.user.id_cliente || req.user.id;
+    const id_clientes = req.user.id_clientes || req.user.id;
 
-    const eliminado = await Favorito.deleteByClienteAndProfesional(id_cliente, id_profesional);
+    const eliminado = await Favorito.deleteByclientesAndProfesional(id_clientes, id_profesional);
 
     if (!eliminado) {
       return res.status(404).json({
@@ -262,7 +262,7 @@ module.exports = {
   agregarFavorito,
   obtenerFavoritos,
   verificarFavorito,
-  obtenerClientesFavoritos,
+  obtenerclientessFavoritos,
   obtenerEstadisticasFavoritos,
   obtenerTopFavoritos,
   eliminarFavorito,

@@ -162,19 +162,19 @@ const obtenerValoracionesPorProfesional = async (req, res) => {
   }
 };
 
-// Obtener valoraciones por cliente
-const obtenerValoracionesPorCliente = async (req, res) => {
+// Obtener valoraciones por clientes
+const obtenerValoracionesPorclientes = async (req, res) => {
   try {
-    const { id_cliente } = req.params;
+    const { id_clientes } = req.params;
     const { limit = 50, offset = 0 } = req.query;
     
-    const valoraciones = await Valoracion.findByCliente(id_cliente, parseInt(limit), parseInt(offset));
+    const valoraciones = await Valoracion.findByclientes(id_clientes, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
         valoraciones,
-        id_cliente,
+        id_clientes,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
@@ -183,7 +183,7 @@ const obtenerValoracionesPorCliente = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error al obtener valoraciones por cliente:', error);
+    console.error('Error al obtener valoraciones por clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -280,7 +280,7 @@ const buscarValoraciones = async (req, res) => {
       limit = 50, 
       offset = 0, 
       id_profesional, 
-      id_cliente, 
+      id_clientes, 
       rating, 
       rating_min, 
       rating_max, 
@@ -292,7 +292,7 @@ const buscarValoraciones = async (req, res) => {
 
     const criterios = {};
     if (id_profesional) criterios.id_profesional = id_profesional;
-    if (id_cliente) criterios.id_cliente = id_cliente;
+    if (id_clientes) criterios.id_clientes = id_clientes;
     if (rating) criterios.rating = rating;
     if (rating_min) criterios.rating_min = parseInt(rating_min);
     if (rating_max) criterios.rating_max = parseInt(rating_max);
@@ -387,7 +387,7 @@ module.exports = {
   obtenerValoracionPorId,
   obtenerValoracionesPorSesion,
   obtenerValoracionesPorProfesional,
-  obtenerValoracionesPorCliente,
+  obtenerValoracionesPorclientes,
   actualizarValoracion,
   cambiarEstadoValoracion,
   buscarValoraciones,

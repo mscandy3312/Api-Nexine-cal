@@ -55,13 +55,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE ts.id_transaccion = ?
       `;
       const result = await executeQuery(query, [id]);
@@ -78,13 +78,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE ts.stripe_payment_id = ?
       `;
       const result = await executeQuery(query, [stripe_payment_id]);
@@ -101,13 +101,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
       `;
@@ -125,13 +125,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE ts.id_pago = ?
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
@@ -150,13 +150,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE ts.id_sesion = ?
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
@@ -175,13 +175,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE p.id_profesional = ?
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
@@ -200,13 +200,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE ts.estado = ?
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
@@ -225,13 +225,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE DATE(ts.fecha) = ?
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
@@ -250,13 +250,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE DATE(ts.fecha) BETWEEN ? AND ?
         ORDER BY ts.fecha DESC
         LIMIT ? OFFSET ?
@@ -275,13 +275,13 @@ class TransaccionStripe {
         SELECT ts.*, 
                p.id_profesional,
                pr.nombre_completo as profesional_nombre,
-               s.id_cliente,
-               c.nombre_completo as cliente_nombre
+               s.id_clientes,
+               c.nombre_completo as clientes_nombre
         FROM TRANSACCIONES_STRIPE ts
         JOIN PAGOS p ON ts.id_pago = p.id_pago
         JOIN PROFESIONALES pr ON p.id_profesional = pr.id_profesional
         LEFT JOIN SESIONES s ON ts.id_sesion = s.id_sesion
-        LEFT JOIN CLIENTES c ON s.id_cliente = c.id_cliente
+        LEFT JOIN clientesS c ON s.id_clientes = c.id_clientes
         WHERE 1=1
       `;
       const values = [];

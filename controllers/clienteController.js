@@ -1,8 +1,8 @@
-const Cliente = require('../models/Cliente');
+const clientes = require('../models/Clientes');
 const { validationResult } = require('express-validator');
 
-// Crear cliente
-const crearCliente = async (req, res) => {
+// Crear clientes
+const crearclientes = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -14,41 +14,41 @@ const crearCliente = async (req, res) => {
     }
 
     const {
-      id_usuario,
+      id_usuarioss,
       nombre_completo,
       telefono,
-      nombre_usuario,
+      nombre_usuarioss,
       ciudad,
       codigo_postal,
       ingreso,
       estado
     } = req.body;
 
-    // Verificar si el usuario ya tiene un perfil de cliente
-    const clienteExistente = await Cliente.findByUserId(id_usuario);
-    if (clienteExistente) {
+    // Verificar si el usuarioss ya tiene un perfil de clientes
+    const clientesExistente = await clientes.findByUserId(id_usuarioss);
+    if (clientesExistente) {
       return res.status(400).json({
         success: false,
-        message: 'El usuario ya tiene un perfil de cliente'
+        message: 'El usuarioss ya tiene un perfil de clientes'
       });
     }
 
-    // Verificar si el nombre de usuario ya existe
-    if (nombre_usuario) {
-      const clienteConUsername = await Cliente.findByUsername(nombre_usuario);
-      if (clienteConUsername) {
+    // Verificar si el nombre de usuarioss ya existe
+    if (nombre_usuarioss) {
+      const clientesConUsername = await clientes.findByUsername(nombre_usuarioss);
+      if (clientesConUsername) {
         return res.status(400).json({
           success: false,
-          message: 'El nombre de usuario ya está en uso'
+          message: 'El nombre de usuarioss ya está en uso'
         });
       }
     }
 
-    const nuevoCliente = await Cliente.create({
-      id_usuario,
+    const nuevoclientes = await clientes.create({
+      id_usuarioss,
       nombre_completo,
       telefono,
-      nombre_usuario,
+      nombre_usuarioss,
       ciudad,
       codigo_postal,
       ingreso,
@@ -57,13 +57,13 @@ const crearCliente = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Cliente creado exitosamente',
+      message: 'clientes creado exitosamente',
       data: {
-        cliente: nuevoCliente
+        clientes: nuevoclientes
       }
     });
   } catch (error) {
-    console.error('Error al crear cliente:', error);
+    console.error('Error al crear clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -72,27 +72,60 @@ const crearCliente = async (req, res) => {
   }
 };
 
-// Obtener todos los clientes
-const obtenerClientes = async (req, res) => {
+// Obtener todos los clientess
+const obtenerclientess = async (req, res) => {
   try {
     const { limit = 50, offset = 0, search } = req.query;
     
-    let clientes;
+    let clientess;
     if (search) {
-      clientes = await Cliente.search({ nombre_completo: search }, parseInt(limit), parseInt(offset));
+      clientess = await clientes.search({ nombre_completo: search }, parseInt(limit), parseInt(offset));
     } else {
-      clientes = await Cliente.findAll(parseInt(limit), parseInt(offset));
+      clientess = await clientes.findAll(parseInt(limit), parseInt(offset));
     }
 
     res.json({
       success: true,
       data: {
-        clientes,
+        clientess,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: clientes.length
+          total: clientess.length
         }
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener clientess:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: error.message
+    });
+  }
+};
+
+// Obtener clientes por ID
+const obtenerclientesPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const clientes = await clientes.findById(id);
+    
+    if (!clientes) {
+      return res.status(404).json({
+        success: false,
+        message: 'clientes no encontrado'
+      });
+    }
+
+    // Obtener estadísticas del clientes
+    const stats = await clientes.getStats();
+
+    res.json({
+      success: true,
+      data: {
+        clientes,
+        estadisticas: stats
       }
     });
   } catch (error) {
@@ -105,64 +138,31 @@ const obtenerClientes = async (req, res) => {
   }
 };
 
-// Obtener cliente por ID
-const obtenerClientePorId = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const cliente = await Cliente.findById(id);
-    
-    if (!cliente) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cliente no encontrado'
-      });
-    }
-
-    // Obtener estadísticas del cliente
-    const stats = await cliente.getStats();
-
-    res.json({
-      success: true,
-      data: {
-        cliente,
-        estadisticas: stats
-      }
-    });
-  } catch (error) {
-    console.error('Error al obtener cliente:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor',
-      error: error.message
-    });
-  }
-};
-
-// Obtener cliente por usuario
-const obtenerClientePorUsuario = async (req, res) => {
+// Obtener clientes por usuarioss
+const obtenerclientesPorusuarioss = async (req, res) => {
   try {
     const { userId } = req.params;
-    const cliente = await Cliente.findByUserId(userId);
+    const clientes = await clientes.findByUserId(userId);
     
-    if (!cliente) {
+    if (!clientes) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'clientes no encontrado'
       });
     }
 
-    // Obtener estadísticas del cliente
-    const stats = await cliente.getStats();
+    // Obtener estadísticas del clientes
+    const stats = await clientes.getStats();
 
     res.json({
       success: true,
       data: {
-        cliente,
+        clientes,
         estadisticas: stats
       }
     });
   } catch (error) {
-    console.error('Error al obtener cliente:', error);
+    console.error('Error al obtener clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -171,8 +171,8 @@ const obtenerClientePorUsuario = async (req, res) => {
   }
 };
 
-// Actualizar cliente
-const actualizarCliente = async (req, res) => {
+// Actualizar clientes
+const actualizarclientes = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -184,19 +184,19 @@ const actualizarCliente = async (req, res) => {
     }
 
     const { id } = req.params;
-    const cliente = await Cliente.findById(id);
+    const clientes = await clientes.findById(id);
     
-    if (!cliente) {
+    if (!clientes) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'clientes no encontrado'
       });
     }
 
     const {
       nombre_completo,
       telefono,
-      nombre_usuario,
+      nombre_usuarioss,
       ciudad,
       codigo_postal,
       ingreso,
@@ -206,33 +206,33 @@ const actualizarCliente = async (req, res) => {
     const datosActualizacion = {};
     if (nombre_completo) datosActualizacion.nombre_completo = nombre_completo;
     if (telefono !== undefined) datosActualizacion.telefono = telefono;
-    if (nombre_usuario !== undefined) {
-      // Verificar si el nombre de usuario ya existe en otro cliente
-      const clienteConUsername = await Cliente.findByUsername(nombre_usuario);
-      if (clienteConUsername && clienteConUsername.id_cliente !== cliente.id_cliente) {
+    if (nombre_usuarioss !== undefined) {
+      // Verificar si el nombre de usuarioss ya existe en otro clientes
+      const clientesConUsername = await clientes.findByUsername(nombre_usuarioss);
+      if (clientesConUsername && clientesConUsername.id_clientes !== clientes.id_clientes) {
         return res.status(400).json({
           success: false,
-          message: 'El nombre de usuario ya está en uso'
+          message: 'El nombre de usuarioss ya está en uso'
         });
       }
-      datosActualizacion.nombre_usuario = nombre_usuario;
+      datosActualizacion.nombre_usuarioss = nombre_usuarioss;
     }
     if (ciudad !== undefined) datosActualizacion.ciudad = ciudad;
     if (codigo_postal !== undefined) datosActualizacion.codigo_postal = codigo_postal;
     if (ingreso !== undefined) datosActualizacion.ingreso = ingreso;
     if (estado !== undefined) datosActualizacion.estado = estado;
 
-    const clienteActualizado = await cliente.update(datosActualizacion);
+    const clientesActualizado = await clientes.update(datosActualizacion);
 
     res.json({
       success: true,
-      message: 'Cliente actualizado exitosamente',
+      message: 'clientes actualizado exitosamente',
       data: {
-        cliente: clienteActualizado
+        clientes: clientesActualizado
       }
     });
   } catch (error) {
-    console.error('Error al actualizar cliente:', error);
+    console.error('Error al actualizar clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -241,14 +241,14 @@ const actualizarCliente = async (req, res) => {
   }
 };
 
-// Buscar clientes
-const buscarClientes = async (req, res) => {
+// Buscar clientess
+const buscarclientess = async (req, res) => {
   try {
     const { 
       limit = 50, 
       offset = 0, 
       nombre_completo, 
-      nombre_usuario, 
+      nombre_usuarioss, 
       ciudad, 
       estado, 
       ingreso_min, 
@@ -257,27 +257,27 @@ const buscarClientes = async (req, res) => {
 
     const criterios = {};
     if (nombre_completo) criterios.nombre_completo = nombre_completo;
-    if (nombre_usuario) criterios.nombre_usuario = nombre_usuario;
+    if (nombre_usuarioss) criterios.nombre_usuarioss = nombre_usuarioss;
     if (ciudad) criterios.ciudad = ciudad;
     if (estado) criterios.estado = estado;
     if (ingreso_min) criterios.ingreso_min = parseFloat(ingreso_min);
     if (ingreso_max) criterios.ingreso_max = parseFloat(ingreso_max);
 
-    const clientes = await Cliente.search(criterios, parseInt(limit), parseInt(offset));
+    const clientess = await clientes.search(criterios, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        clientes,
+        clientess,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: clientes.length
+          total: clientess.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al buscar clientes:', error);
+    console.error('Error al buscar clientess:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -286,21 +286,21 @@ const buscarClientes = async (req, res) => {
   }
 };
 
-// Obtener historial de sesiones del cliente
+// Obtener historial de sesiones del clientes
 const obtenerHistorialSesiones = async (req, res) => {
   try {
     const { id } = req.params;
     const { limit = 20, offset = 0 } = req.query;
     
-    const cliente = await Cliente.findById(id);
-    if (!cliente) {
+    const clientes = await clientes.findById(id);
+    if (!clientes) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'clientes no encontrado'
       });
     }
 
-    const sesiones = await cliente.getSesiones(parseInt(limit), parseInt(offset));
+    const sesiones = await clientes.getSesiones(parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
@@ -323,35 +323,35 @@ const obtenerHistorialSesiones = async (req, res) => {
   }
 };
 
-// Obtener historial de citas del cliente
-const obtenerHistorialCitas = async (req, res) => {
+// Obtener historial de citass del clientes
+const obtenerHistorialcitass = async (req, res) => {
   try {
     const { id } = req.params;
     const { limit = 20, offset = 0 } = req.query;
     
-    const cliente = await Cliente.findById(id);
-    if (!cliente) {
+    const clientes = await clientes.findById(id);
+    if (!clientes) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'clientes no encontrado'
       });
     }
 
-    const citas = await cliente.getCitas(parseInt(limit), parseInt(offset));
+    const citass = await clientes.getcitass(parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        citas,
+        citass,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: citas.length
+          total: citass.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener historial de citas:', error);
+    console.error('Error al obtener historial de citass:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -360,27 +360,27 @@ const obtenerHistorialCitas = async (req, res) => {
   }
 };
 
-// Eliminar cliente
-const eliminarCliente = async (req, res) => {
+// Eliminar clientes
+const eliminarclientes = async (req, res) => {
   try {
     const { id } = req.params;
-    const cliente = await Cliente.findById(id);
+    const clientes = await clientes.findById(id);
     
-    if (!cliente) {
+    if (!clientes) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'clientes no encontrado'
       });
     }
 
-    await cliente.delete();
+    await clientes.delete();
 
     res.json({
       success: true,
-      message: 'Cliente eliminado exitosamente'
+      message: 'clientes eliminado exitosamente'
     });
   } catch (error) {
-    console.error('Error al eliminar cliente:', error);
+    console.error('Error al eliminar clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -390,13 +390,13 @@ const eliminarCliente = async (req, res) => {
 };
 
 module.exports = {
-  crearCliente,
-  obtenerClientes,
-  obtenerClientePorId,
-  obtenerClientePorUsuario,
-  actualizarCliente,
-  buscarClientes,
+  crearclientes,
+  obtenerclientess,
+  obtenerclientesPorId,
+  obtenerclientesPorusuarioss,
+  actualizarclientes,
+  buscarclientess,
   obtenerHistorialSesiones,
-  obtenerHistorialCitas,
-  eliminarCliente
+  obtenerHistorialcitass,
+  eliminarclientes
 };
