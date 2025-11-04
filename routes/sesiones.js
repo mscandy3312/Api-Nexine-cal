@@ -58,13 +58,13 @@ router.get('/pedido/:numero_pedido',
   sesionController.obtenerSesionPorPedido
 );
 
-// Obtener sesiones por cliente
-router.get('/cliente/:id_cliente', 
+// Obtener sesiones por clientes
+router.get('/clientes/:id_clientes', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  sesionController.obtenerSesionesPorCliente
+  sesionController.obtenerSesionesPorclientes
 );
 
 // Obtener sesiones por profesional

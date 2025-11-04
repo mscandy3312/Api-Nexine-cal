@@ -36,7 +36,7 @@ router.get('/',
   authenticateToken, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  notificacionController.obtenerNotificacionesUsuario
+  notificacionController.obtenerNotificacionesusuarioss
 );
 
 router.get('/tipo/:tipo_notificacion', 

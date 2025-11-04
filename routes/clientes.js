@@ -1,87 +1,103 @@
+// --- [RUTAS] routes/clientes.js ¡CARGADO Y CORREGIDO! ---
+console.log('--- [RUTAS] routes/clientes.js ¡CARGADO Y CORREGIDO! ---');
+
 const express = require('express');
 const router = express.Router();
-const clientesController = require('../controllers/clienteController');
+// --- ¡CORREGIDO! --- (Nombre de controlador singular)
+const clienteController = require('../controllers/clienteController'); 
 const { authenticateToken } = require('../middleware/auth');
+
+// --- ¡CORREGIDO! ---
+// Importa 'validateCliente' (singular) desde el middleware de validación
 const { 
-  validateclientes, 
+  validateCliente, 
   validateParams, 
   validateQuery, 
   handleValidationErrors 
 } = require('../middleware/validation');
 
-// Crear clientes
+// --- ¡CORREGIDO! ---
+// Crear cliente
 router.post('/', 
   authenticateToken, 
-  validateclientes.crear, 
+  validateCliente.crear, // <-- Corregido a singular
   handleValidationErrors, 
-  clientesController.crearclientes
+  clienteController.crearCliente // <-- Corregido a singular
 );
 
-// Obtener todos los clientess
+// --- ¡CORREGIDO! ---
+// Obtener todos los clientes
 router.get('/', 
   authenticateToken, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clientesController.obtenerclientess
+  clienteController.obtenerClientes // <-- Corregido a singular
 );
 
-// Buscar clientess
+// --- ¡CORREGIDO! ---
+// Buscar clientes
 router.get('/buscar', 
   authenticateToken, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clientesController.buscarclientess
+  clienteController.buscarClientes // <-- Corregido a singular
 );
 
-// Obtener clientes por ID
+// --- ¡CORREGIDO! ---
+// Obtener cliente por ID
 router.get('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  clientesController.obtenerclientesPorId
+  clienteController.obtenerClientePorId // <-- Corregido a singular
 );
 
-// Obtener clientes por usuarioss
-router.get('/usuarioss/:userId', 
+// --- ¡CORREGIDO! ---
+// Obtener cliente por ID de Usuario
+router.get('/usuario/:userId', // <-- Ruta corregida (de 'usuarioss' a 'usuario')
   authenticateToken, 
   validateParams.userId, 
   handleValidationErrors, 
-  clientesController.obtenerclientesPorusuarioss
+  clienteController.obtenerClientePorUsuario // <-- Corregido a singular
 );
 
-// Actualizar clientes
+// --- ¡CORREGIDO! ---
+// Actualizar cliente
 router.put('/:id', 
   authenticateToken, 
   validateParams.id, 
-  validateclientes.crear, 
+  validateCliente.crear, // Reutiliza la validación de 'crear'
   handleValidationErrors, 
-  clientesController.actualizarclientes
+  clienteController.actualizarCliente // <-- Corregido a singular
 );
 
-// Obtener historial de sesiones del clientes
+// Obtener historial de sesiones del cliente
 router.get('/:id/sesiones', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clientesController.obtenerHistorialSesiones
+  clienteController.obtenerHistorialSesiones
 );
 
-// Obtener historial de citass del clientes
-router.get('/:id/citass', 
+// --- ¡CORREGIDO! ---
+// Obtener historial de citas del cliente
+router.get('/:id/citas', // <-- Ruta corregida (de 'citass' a 'citas')
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  clientesController.obtenerHistorialcitass
+  clienteController.obtenerHistorialCitas // <-- Corregido a singular
 );
 
-// Eliminar clientes
+// --- ¡CORREGIDO! ---
+// Eliminar cliente
 router.delete('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  clientesController.eliminarclientes
+  clienteController.eliminarCliente // <-- Corregido a singular
 );
 
 module.exports = router;
+

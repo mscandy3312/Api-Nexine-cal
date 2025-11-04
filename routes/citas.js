@@ -1,97 +1,113 @@
+// --- [RUTAS] routes/citas.js ¡CARGADO Y CORREGIDO! ---
+console.log('--- [RUTAS] routes/citas.js ¡CARGADO Y CORREGIDO! ---');
+
 const express = require('express');
 const router = express.Router();
-const citasController = require('../controllers/citaController');
+const citasController = require('../controllers/citaController'); // Asumiendo que el controlador es singular
 const { authenticateToken } = require('../middleware/auth');
+
+// --- ¡CORREGIDO! ---
+// Importa 'validateCita' (singular) y los 'validateParams' correctos
 const { 
-  validatecitas, 
-  validateParams, 
+  validateCita, 
+  validateParams, // Contiene 'id', 'idProfesional', etc.
   validateQuery, 
   handleValidationErrors 
 } = require('../middleware/validation');
 
-// Crear citas
+// --- ¡CORREGIDO! ---
+// Crear cita
 router.post('/', 
   authenticateToken, 
-  validatecitas.crear, 
+  validateCita.crear, // <-- Singular
   handleValidationErrors, 
-  citasController.crearcitas
+  citasController.crearCita // <-- Singular
 );
 
-// Obtener todas las citass
+// --- ¡CORREGIDO! ---
+// Obtener todas las citas
 router.get('/', 
   authenticateToken, 
   validateQuery.paginacion, 
   validateQuery.fechas, 
   handleValidationErrors, 
-  citasController.obtenercitass
+  citasController.obtenerCitas // <-- Singular
 );
 
-// Buscar citass
+// --- ¡CORREGIDO! ---
+// Buscar citas
 router.get('/buscar', 
   authenticateToken, 
   validateQuery.paginacion, 
   validateQuery.fechas, 
   handleValidationErrors, 
-  citasController.buscarcitass
+  citasController.buscarCitas // <-- Singular
 );
 
-// Obtener estadísticas de citass
+// --- ¡CORREGIDO! ---
+// Obtener estadísticas de citas
 router.get('/estadisticas', 
   authenticateToken, 
   validateQuery.fechas, 
   handleValidationErrors, 
-  citasController.obtenerEstadisticascitass
+  citasController.obtenerEstadisticasCitas // <-- Singular
 );
 
-// Obtener citas por ID
+// --- ¡CORREGIDO! ---
+// Obtener cita por ID
 router.get('/:id', 
   authenticateToken, 
-  validateParams.id, 
+  validateParams.id, // <-- Esto valida el ':id'
   handleValidationErrors, 
-  citasController.obtenercitasPorId
+  citasController.obtenerCitaPorId // <-- Singular
 );
 
-// Obtener citass por clientes
-router.get('/clientes/:id_clientes', 
+// --- ¡CORREGIDO! ---
+// Obtener citas por cliente
+router.get('/cliente/:id', // <-- Ruta corregida a /:id
   authenticateToken, 
-  validateParams.id, 
+  validateParams.id, // <-- Esto valida el ':id'
   validateQuery.paginacion, 
   handleValidationErrors, 
-  citasController.obtenercitassPorclientes
+  citasController.obtenerCitasPorCliente // <-- Singular
 );
 
-// Obtener citass por profesional
-router.get('/profesional/:id_profesional', 
+// --- ¡CORREGIDO! ---
+// Obtener citas por profesional
+router.get('/profesional/:id_profesional', // <-- Ruta correcta
   authenticateToken, 
-  validateParams.id, 
+  validateParams.idProfesional, // <-- Validación corregida
   validateQuery.paginacion, 
   handleValidationErrors, 
-  citasController.obtenercitassPorProfesional
+  citasController.obtenerCitasPorProfesional // <-- Singular
 );
 
-// Actualizar citas
+// --- ¡CORREGIDO! ---
+// Actualizar cita
 router.put('/:id', 
   authenticateToken, 
   validateParams.id, 
-  validatecitas.crear, 
+  validateCita.crear, // <-- Singular (reutiliza la validación de crear)
   handleValidationErrors, 
-  citasController.actualizarcitas
+  citasController.actualizarCita // <-- Singular
 );
 
-// Cambiar estado de la citas
+// --- ¡CORREGIDO! ---
+// Cambiar estado de la cita
 router.put('/:id/estado', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  citasController.cambiarEstadocitas
+  citasController.cambiarEstadoCita // <-- Singular
 );
 
-// Eliminar citas
+// --- ¡CORREGIDO! ---
+// Eliminar cita
 router.delete('/:id', 
   authenticateToken, 
   validateParams.id, 
   handleValidationErrors, 
-  citasController.eliminarcitas
+  citasController.eliminarCita // <-- Singular
 );
 
 module.exports = router;

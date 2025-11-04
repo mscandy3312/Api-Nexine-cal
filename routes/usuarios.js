@@ -1,7 +1,15 @@
+// --- [RUTAS] routes/usuarios.js ¡CARGADO CORRECTAMENTE! ---
+console.log('--- [RUTAS] routes/usuarios.js ¡CARGADO CORRECTAMENTE! ---');
+
 const express = require('express');
 const router = express.Router();
-const usuarioController = require('../controllers/usuarioController');
+
+// 1. Importa el controlador singular (el que sí existe)
+const usuarioController = require('../controllers/usuarioController'); 
 const { authenticateToken } = require('../middleware/auth');
+
+// --- ¡CORREGIDO! ---
+// 2. Importa el objeto 'validateUsuario' (singular) de tu middleware
 const { 
   validateUsuario, 
   validateParams, 
@@ -9,20 +17,28 @@ const {
   handleValidationErrors 
 } = require('../middleware/validation');
 
-// Rutas públicas
+// --- Rutas Públicas ---
+
 router.post('/registro', 
-  validateUsuario.registro, 
+  validateUsuario.registro, // <-- Corregido a singular
   handleValidationErrors, 
-  usuarioController.registrarUsuario
+  usuarioController.registrarUsuario // <-- Usa el controlador singular
 );
 
 router.post('/login', 
-  validateUsuario.login, 
+  validateUsuario.login, // <-- Corregido a singular
   handleValidationErrors, 
   usuarioController.loginUsuario
 );
 
-// Rutas protegidas
+router.post('/verificar-codigo',
+  validateUsuario.verificarCodigo, // <-- Corregido a singular
+  handleValidationErrors,
+  usuarioController.verificarCodigo
+);
+
+// --- Rutas Protegidas (requieren token) ---
+
 router.get('/perfil', 
   authenticateToken, 
   usuarioController.obtenerPerfil
@@ -30,19 +46,28 @@ router.get('/perfil',
 
 router.put('/perfil', 
   authenticateToken, 
-  validateUsuario.actualizarPerfil, 
+  validateUsuario.actualizarPerfil, // <-- Corregido a singular
   handleValidationErrors, 
   usuarioController.actualizarPerfil
 );
 
 router.put('/cambiar-password', 
   authenticateToken, 
-  validateUsuario.cambiarPassword, 
+  validateUsuario.cambiarPassword, // <-- Corregido a singular
   handleValidationErrors, 
   usuarioController.cambiarPassword
 );
 
-// Rutas de administración
+// --- ¡AÑADIDO! ---
+// Ruta de Cierre de Sesión (soluciona el 404 del frontend)
+router.post('/cerrar-sesion',
+  authenticateToken,
+  usuarioController.cerrarSesion 
+);
+
+
+// --- Rutas de Administración ---
+
 router.get('/', 
   authenticateToken, 
   validateQuery.paginacion, 
@@ -60,7 +85,7 @@ router.get('/:id',
 router.put('/:id', 
   authenticateToken, 
   validateParams.id, 
-  validateUsuario.actualizarPerfil, 
+  validateUsuario.actualizarPerfil, // <-- Corregido a singular
   handleValidationErrors, 
   usuarioController.actualizarUsuario
 );

@@ -61,13 +61,13 @@ router.get('/profesional/:id_profesional',
   valoracionController.obtenerValoracionesPorProfesional
 );
 
-// Obtener valoraciones por cliente
-router.get('/cliente/:id_cliente', 
+// Obtener valoraciones por clientes
+router.get('/clientes/:id_clientes', 
   authenticateToken, 
   validateParams.id, 
   validateQuery.paginacion, 
   handleValidationErrors, 
-  valoracionController.obtenerValoracionesPorCliente
+  valoracionController.obtenerValoracionesPorclientes
 );
 
 // Actualizar valoración

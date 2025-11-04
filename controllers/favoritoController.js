@@ -1,3 +1,6 @@
+// --- [CONTROLADOR] controllers/favoritoController.js ¡CARGADO Y CORREGIDO! ---
+console.log('--- [CONTROLADOR] controllers/favoritoController.js ¡CARGADO Y CORREGIDO! ---');
+
 const Favorito = require('../models/favoritos');
 const { validationResult } = require('express-validator');
 
@@ -14,10 +17,15 @@ const agregarFavorito = async (req, res) => {
     }
 
     const { id_profesional } = req.body;
-    const id_clientes = req.user.id_clientes || req.user.id; // Asumiendo que el usuarioss tiene id_clientes
+    // --- CORREGIDO --- (Asumiendo que el ID de cliente viene del token)
+    const id_cliente = req.user.id_cliente; 
+    
+    if (!id_cliente) {
+      return res.status(403).json({ success: false, message: 'No se encontró un perfil de cliente para este usuario.' });
+    }
 
     const favorito = await Favorito.create({
-      id_clientes,
+      id_cliente,
       id_profesional
     });
 
@@ -38,13 +46,19 @@ const agregarFavorito = async (req, res) => {
   }
 };
 
-// Obtener favoritos de un clientes
+// Obtener favoritos del cliente (el que está logueado)
 const obtenerFavoritos = async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
-    const id_clientes = req.user.id_clientes || req.user.id;
+    // --- CORREGIDO ---
+    const id_cliente = req.user.id_cliente;
+    
+    if (!id_cliente) {
+      return res.status(403).json({ success: false, message: 'No se encontró un perfil de cliente para este usuario.' });
+    }
 
-    const favoritos = await Favorito.findByclientes(id_clientes, parseInt(limit), parseInt(offset));
+    // --- CORREGIDO --- (Llama a la función correcta del modelo)
+    const favoritos = await Favorito.findByCliente(id_cliente, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
@@ -67,19 +81,57 @@ const obtenerFavoritos = async (req, res) => {
   }
 };
 
+// --- ¡FUNCIÓN AÑADIDA! ---
+// Esta es la función que faltaba y causaba el error 404/500
+// Obtiene favoritos para CUALQUIER cliente (usado por el frontend App.js)
+const obtenerFavoritosPorCliente = async (req, res) => {
+  try {
+    const { id } = req.params; // Este es el id_cliente de la URL
+    const { limit = 50, offset = 0 } = req.query;
+
+    // Llama a la función del modelo que busca por ID de cliente
+    const favoritos = await Favorito.findByCliente(id, parseInt(limit), parseInt(offset)); 
+
+    res.json({
+      success: true,
+      data: {
+        favoritos,
+        paginacion: {
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          total: favoritos.length
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener favoritos por cliente:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      error: error.message
+    });
+  }
+};
+
+
 // Verificar si un profesional está en favoritos
 const verificarFavorito = async (req, res) => {
   try {
     const { id_profesional } = req.params;
-    const id_clientes = req.user.id_clientes || req.user.id;
+    // --- CORREGIDO ---
+    const id_cliente = req.user.id_cliente;
+    
+    if (!id_cliente) {
+      return res.status(403).json({ success: false, message: 'No se encontró un perfil de cliente para este usuario.' });
+    }
 
-    const esFavorito = await Favorito.isFavorito(id_clientes, id_profesional);
+    const esFavorito = await Favorito.isFavorito(id_cliente, id_profesional);
 
     res.json({
       success: true,
       data: {
         esFavorito,
-        id_clientes,
+        id_cliente,
         id_profesional
       }
     });
@@ -93,28 +145,30 @@ const verificarFavorito = async (req, res) => {
   }
 };
 
-// Obtener clientess que tienen como favorito a un profesional
-const obtenerclientessFavoritos = async (req, res) => {
+// Obtener clientes que tienen como favorito a un profesional
+// --- CORREGIDO --- (Nombre de función)
+const obtenerClientesFavoritos = async (req, res) => {
   try {
     const { id_profesional } = req.params;
     const { limit = 50, offset = 0 } = req.query;
 
-    const clientess = await Favorito.findByProfesional(id_profesional, parseInt(limit), parseInt(offset));
+    // --- CORREGIDO --- (Nombre de variable)
+    const clientes = await Favorito.findByProfesional(id_profesional, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        clientess,
+        clientes, // <-- CORREGIDO
         id_profesional,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: clientess.length
+          total: clientes.length // <-- CORREGIDO
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener clientess favoritos:', error);
+    console.error('Error al obtener clientes favoritos:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -175,9 +229,14 @@ const obtenerTopFavoritos = async (req, res) => {
 const eliminarFavorito = async (req, res) => {
   try {
     const { id_profesional } = req.params;
-    const id_clientes = req.user.id_clientes || req.user.id;
+    // --- CORREGIDO ---
+    const id_cliente = req.user.id_cliente;
 
-    const eliminado = await Favorito.deleteByclientesAndProfesional(id_clientes, id_profesional);
+    if (!id_cliente) {
+      return res.status(403).json({ success: false, message: 'No se encontró un perfil de cliente para este usuario.' });
+    }
+
+    const eliminado = await Favorito.deleteByClienteAndProfesional(id_cliente, id_profesional);
 
     if (!eliminado) {
       return res.status(404).json({
@@ -258,15 +317,16 @@ const obtenerFavoritoPorId = async (req, res) => {
   }
 };
 
+// --- CORREGIDO --- (Exportaciones)
 module.exports = {
   agregarFavorito,
   obtenerFavoritos,
+  obtenerFavoritosPorCliente, // <-- AÑADIDO
   verificarFavorito,
-  obtenerclientessFavoritos,
+  obtenerClientesFavoritos, // <-- CORREGIDO
   obtenerEstadisticasFavoritos,
   obtenerTopFavoritos,
   eliminarFavorito,
   eliminarFavoritoPorId,
   obtenerFavoritoPorId
 };
-

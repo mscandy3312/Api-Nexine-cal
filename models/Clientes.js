@@ -1,48 +1,59 @@
-const { executeQuery } = require('../config/database');
+// --- [MODELO] models/Clientes.js ¡CARGADO CORRECTAMENTE! ---
+console.log('--- [MODELO] models/Clientes.js ¡CARGADO CORRECTAMENTE! ---');
 
-class clientes {
+// --- ¡CORREGIDO! ---
+// Importamos el 'pool' de conexiones
+const pool = require('../config/database');
+
+// --- ¡CORREGIDO! ---
+// Nombre de la clase en singular y mayúscula (convención)
+class Cliente {
   constructor(data) {
-    this.id_clientes = data.id_clientes;
-    this.id_usuarioss = data.id_usuarioss;
+    // --- ¡CORREGIDO! ---
+    // Propiedades ajustadas a la tabla `clientes` de dbnaxine (la que usa App.js)
+    this.id_cliente = data.id_cliente;
+    this.id_usuario = data.id_usuario;
     this.nombre_completo = data.nombre_completo;
     this.telefono = data.telefono;
-    this.nombre_usuarioss = data.nombre_usuarioss;
-    this.ciudad = data.ciudad;
-    this.codigo_postal = data.codigo_postal;
-    this.ingreso = data.ingreso;
-    this.estado = data.estado;
+    this.email = data.email;
+    this.fecha_nacimiento = data.fecha_nacimiento;
+    this.historial_medico = data.historial_medico;
+
+    // Campos de JOIN (de la tabla usuarios)
+    this.email_usuario = data.email_usuario;
+    this.nombre_usuario = data.nombre_usuario; // Nombre de la tabla usuarios
+    this.is_verified = data.is_verified;
   }
 
-  // Crear nuevo clientes
-  static async create(clientesData) {
+  // Crear nuevo cliente
+  static async create(clienteData) {
     try {
+      // --- ¡CORREGIDO! ---
+      // Campos ajustados al schema real
       const {
-        id_usuarioss,
+        id_usuario,
         nombre_completo,
         telefono,
-        nombre_usuarioss,
-        ciudad,
-        codigo_postal,
-        ingreso,
-        estado
-      } = clientesData;
+        email,
+        fecha_nacimiento,
+        historial_medico
+      } = clienteData;
 
       const query = `
-        INSERT INTO clientesS (
-          id_usuarioss, nombre_completo, telefono, nombre_usuarioss,
-          ciudad, codigo_postal, ingreso, estado
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO clientes (
+          id_usuario, nombre_completo, telefono, email, 
+          fecha_nacimiento, historial_medico
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `;
 
-      const result = await executeQuery(query, [
-        id_usuarioss,
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, [
+        id_usuario,
         nombre_completo,
         telefono,
-        nombre_usuarioss,
-        ciudad,
-        codigo_postal,
-        ingreso,
-        estado
+        email,
+        fecha_nacimiento,
+        historial_medico
       ]);
 
       return await this.findById(result.insertId);
@@ -51,128 +62,103 @@ class clientes {
     }
   }
 
-  // Buscar clientes por ID
+  // Buscar cliente por ID (id_cliente)
   static async findById(id) {
     try {
       const query = `
-        SELECT c.*, u.email, u.nombre, u.is_verified
-        FROM clientesS c
-        JOIN usuariossS u ON c.id_usuarioss = u.id_usuarioss
-        WHERE c.id_clientes = ?
+        SELECT c.*, u.email as email_usuario, u.nombre as nombre_usuario, u.is_verified
+        FROM clientes c
+        JOIN usuarios u ON c.id_usuario = u.id_usuario
+        WHERE c.id_cliente = ?
       `;
-      const result = await executeQuery(query, [id]);
-      return result.length > 0 ? new clientes(result[0]) : null;
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, [id]);
+      return result.length > 0 ? new Cliente(result[0]) : null;
     } catch (error) {
       throw error;
     }
   }
 
-  // Buscar clientes por ID de usuarioss
+  // Buscar cliente por ID de usuario (id_usuario)
   static async findByUserId(userId) {
     try {
       const query = `
-        SELECT c.*, u.email, u.nombre, u.is_verified
-        FROM clientesS c
-        JOIN usuariossS u ON c.id_usuarioss = u.id_usuarioss
-        WHERE c.id_usuarioss = ?
+        SELECT c.*, u.email as email_usuario, u.nombre as nombre_usuario, u.is_verified
+        FROM clientes c
+        JOIN usuarios u ON c.id_usuario = u.id_usuario
+        WHERE c.id_usuario = ?
       `;
-      const result = await executeQuery(query, [userId]);
-      return result.length > 0 ? new clientes(result[0]) : null;
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, [userId]);
+      return result.length > 0 ? new Cliente(result[0]) : null;
     } catch (error) {
       throw error;
     }
   }
 
-  // Buscar clientes por nombre de usuarioss
-  static async findByUsername(username) {
-    try {
-      const query = `
-        SELECT c.*, u.email, u.nombre, u.is_verified
-        FROM clientesS c
-        JOIN usuariossS u ON c.id_usuarioss = u.id_usuarioss
-        WHERE c.nombre_usuarioss = ?
-      `;
-      const result = await executeQuery(query, [username]);
-      return result.length > 0 ? new clientes(result[0]) : null;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  // Obtener todos los clientess
+  // Obtener todos los clientes
   static async findAll(limit = 50, offset = 0) {
     try {
       const query = `
-        SELECT c.*, u.email, u.nombre, u.is_verified
-        FROM clientesS c
-        JOIN usuariossS u ON c.id_usuarioss = u.id_usuarioss
-        ORDER BY c.id_clientes DESC
+        SELECT c.*, u.email as email_usuario, u.nombre as nombre_usuario, u.is_verified
+        FROM clientes c
+        JOIN usuarios u ON c.id_usuario = u.id_usuario
+        ORDER BY c.id_cliente DESC
         LIMIT ? OFFSET ?
       `;
-      const result = await executeQuery(query, [limit, offset]);
-      return result.map(clientes => new clientes(result[0]));
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, [limit, offset]);
+      return result.map(cliente => new Cliente(cliente));
     } catch (error) {
       throw error;
     }
   }
 
-  // Buscar clientess por criterios
+  // Buscar clientes por criterios
   static async search(criteria, limit = 50, offset = 0) {
     try {
       let query = `
-        SELECT c.*, u.email, u.nombre, u.is_verified
-        FROM clientesS c
-        JOIN usuariossS u ON c.id_usuarioss = u.id_usuarioss
+        SELECT c.*, u.email as email_usuario, u.nombre as nombre_usuario, u.is_verified
+        FROM clientes c
+        JOIN usuarios u ON c.id_usuario = u.id_usuario
         WHERE 1=1
       `;
       const values = [];
 
+      // --- ¡CORREGIDO! --- (Criterios ajustados)
       if (criteria.nombre_completo) {
         query += ' AND c.nombre_completo LIKE ?';
         values.push(`%${criteria.nombre_completo}%`);
       }
 
-      if (criteria.nombre_usuarioss) {
-        query += ' AND c.nombre_usuarioss LIKE ?';
-        values.push(`%${criteria.nombre_usuarioss}%`);
+      if (criteria.email) {
+        query += ' AND c.email LIKE ?';
+        values.push(`%${criteria.email}%`);
+      }
+      
+      if (criteria.telefono) {
+        query += ' AND c.telefono = ?';
+        values.push(criteria.telefono);
       }
 
-      if (criteria.ciudad) {
-        query += ' AND c.ciudad = ?';
-        values.push(criteria.ciudad);
-      }
-
-      if (criteria.estado) {
-        query += ' AND c.estado = ?';
-        values.push(criteria.estado);
-      }
-
-      if (criteria.ingreso_min) {
-        query += ' AND c.ingreso >= ?';
-        values.push(criteria.ingreso_min);
-      }
-
-      if (criteria.ingreso_max) {
-        query += ' AND c.ingreso <= ?';
-        values.push(criteria.ingreso_max);
-      }
-
-      query += ' ORDER BY c.id_clientes DESC LIMIT ? OFFSET ?';
+      query += ' ORDER BY c.id_cliente DESC LIMIT ? OFFSET ?';
       values.push(limit, offset);
 
-      const result = await executeQuery(query, values);
-      return result.map(clientes => new clientes(clientes));
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, values);
+      return result.map(cliente => new Cliente(cliente));
     } catch (error) {
       throw error;
     }
   }
 
-  // Actualizar clientes
+  // Actualizar cliente
   async update(updateData) {
     try {
+      // --- ¡CORREGIDO! --- (Campos permitidos ajustados)
       const allowedFields = [
-        'nombre_completo', 'telefono', 'nombre_usuarioss', 'ciudad',
-        'codigo_postal', 'ingreso', 'estado'
+        'nombre_completo', 'telefono', 'email', 
+        'fecha_nacimiento', 'historial_medico'
       ];
       
       const updateFields = [];
@@ -186,35 +172,39 @@ class clientes {
       }
 
       if (updateFields.length === 0) {
-        throw new Error('No hay campos válidos para actualizar');
+        // No hay nada que actualizar
+        return this;
       }
 
-      values.push(this.id_clientes);
-      const query = `UPDATE clientesS SET ${updateFields.join(', ')} WHERE id_clientes = ?`;
+      values.push(this.id_cliente);
+      const query = `UPDATE clientes SET ${updateFields.join(', ')} WHERE id_cliente = ?`;
       
-      await executeQuery(query, values);
-      return await clientes.findById(this.id_clientes);
+      // --- ¡CORREGIDO! --- (pool.query)
+      await pool.query(query, values);
+      return await Cliente.findById(this.id_cliente);
     } catch (error) {
       throw error;
     }
   }
 
-  // Obtener estadísticas del clientes
+  // Obtener estadísticas del cliente
   async getStats() {
     try {
+      // --- ¡CORREGIDO! --- (Nombres de tablas: sesiones, citas)
       const statsQuery = `
         SELECT 
           COUNT(DISTINCT s.id_sesion) as total_sesiones,
-          COUNT(DISTINCT c.id_citas) as total_citass,
+          COUNT(DISTINCT c.id_cita) as total_citas,
           SUM(CASE WHEN s.estado = 'completada' THEN 1 ELSE 0 END) as sesiones_completadas,
-          SUM(CASE WHEN c.estado = 'completada' THEN 1 ELSE 0 END) as citass_completadas
-        FROM clientesS cl
-        LEFT JOIN SESIONES s ON cl.id_clientes = s.id_clientes
-        LEFT JOIN citasS c ON cl.id_clientes = c.id_clientes
-        WHERE cl.id_clientes = ?
+          SUM(CASE WHEN c.estado = 'completada' THEN 1 ELSE 0 END) as citas_completadas
+        FROM clientes cl
+        LEFT JOIN sesiones s ON cl.id_cliente = s.id_cliente
+        LEFT JOIN citas c ON cl.id_cliente = c.id_cliente
+        WHERE cl.id_cliente = ?
       `;
       
-      const result = await executeQuery(statsQuery, [this.id_clientes]);
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(statsQuery, [this.id_cliente]);
       return result[0];
     } catch (error) {
       throw error;
@@ -224,48 +214,51 @@ class clientes {
   // Obtener historial de sesiones
   async getSesiones(limit = 20, offset = 0) {
     try {
+      // --- ¡CORREGIDO! --- (Nombres de tablas: sesiones, profesionales, precios)
       const query = `
-        SELECT s.*, p.nombre_completo as profesional_nombre, pr.nombre_paquete
-        FROM SESIONES s
-        JOIN PROFESIONALES p ON s.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON s.id_precio = pr.id_precio
-        WHERE s.id_clientes = ?
-        ORDER BY s.fecha DESC
+        SELECT s.*, p.nombre_completo as profesional_nombre
+        FROM sesiones s
+        JOIN profesionales p ON s.id_profesional = p.id_profesional
+        WHERE s.id_cliente = ?
+        ORDER BY s.fecha_sesion DESC
         LIMIT ? OFFSET ?
       `;
       
-      const result = await executeQuery(query, [this.id_clientes, limit, offset]);
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, [this.id_cliente, limit, offset]);
       return result;
     } catch (error) {
       throw error;
     }
   }
 
-  // Obtener historial de citass
-  async getcitass(limit = 20, offset = 0) {
+  // Obtener historial de citas
+  async getCitas(limit = 20, offset = 0) {
     try {
+      // --- ¡CORREGIDO! --- (Nombres de tablas: citas, profesionales)
       const query = `
-        SELECT c.*, p.nombre_completo as profesional_nombre, pr.nombre_paquete
-        FROM citasS c
-        JOIN PROFESIONALES p ON c.id_profesional = p.id_profesional
-        LEFT JOIN PRECIOS pr ON c.id_precio = pr.id_precio
-        WHERE c.id_clientes = ?
-        ORDER BY c.fecha DESC
+        SELECT c.*, p.nombre_completo as profesional_nombre
+        FROM citas c
+        JOIN profesionales p ON c.id_profesional = p.id_profesional
+        WHERE c.id_cliente = ?
+        ORDER BY c.fecha_inicio DESC
         LIMIT ? OFFSET ?
       `;
       
-      const result = await executeQuery(query, [this.id_clientes, limit, offset]);
+      // --- ¡CORREGIDO! --- (pool.query)
+      const [result] = await pool.query(query, [this.id_cliente, limit, offset]);
       return result;
     } catch (error) {
       throw error;
     }
   }
 
-  // Eliminar clientes
+  // Eliminar cliente
   async delete() {
     try {
-      const query = 'DELETE FROM clientesS WHERE id_clientes = ?';
-      await executeQuery(query, [this.id_clientes]);
+      const query = 'DELETE FROM clientes WHERE id_cliente = ?';
+      // --- ¡CORREGIDO! --- (pool.query)
+      await pool.query(query, [this.id_cliente]);
       return true;
     } catch (error) {
       throw error;
@@ -273,4 +266,4 @@ class clientes {
   }
 }
 
-module.exports = clientes;
+module.exports = Cliente;

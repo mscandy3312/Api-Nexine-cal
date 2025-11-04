@@ -1,80 +1,55 @@
+// --- [RUTAS] routes/profesionales.js ¡CARGADO! ---
+console.log('--- [RUTAS] routes/profesionales.js ¡CARGADO! ---');
+
 const express = require('express');
 const router = express.Router();
-const profesionalController = require('../controllers/profesionalController');
-const { authenticateToken } = require('../middleware/auth');
-const { 
-  validateProfesional, 
-  validateParams, 
-  validateQuery, 
-  handleValidationErrors 
-} = require('../middleware/validation');
+const {
+  crearProfesional,
+  obtenerProfesionales,
+  obtenerProfesionalPorId,
+  obtenerProfesionalPorUsuario,
+  actualizarProfesional,
+  buscarProfesionales,
+  eliminarProfesional
+  // Nota: 'actualizarRatingProfesional' se elimina porque el rating
+  // se *calcula* desde la tabla 'valoraciones' (ver getStats en el modelo).
+  // No es un campo que se actualiza directamente.
+} = require('../controllers/profesionalController'); // Asumiendo que el controlador está corregido
 
-// Crear profesional
-router.post('/', 
-  authenticateToken, 
-  validateProfesional.crear, 
-  handleValidationErrors, 
-  profesionalController.crearProfesional
-);
+// Middlewares de autenticación y autorización (ejemplo)
+// const { protect, restrictTo } = require('../middleware/authMiddleware');
 
-// Obtener todos los profesionales
-router.get('/', 
-  validateQuery.paginacion, 
-  handleValidationErrors, 
-  profesionalController.obtenerProfesionales
-);
+// --- Rutas Públicas ---
+
+// Obtener todos los profesionales (aprobados)
+// GET /api/profesionales
+router.get('/', obtenerProfesionales); // Podrías filtrar por 'aprobado' en el controlador
 
 // Buscar profesionales
-router.get('/buscar', 
-  validateQuery.paginacion, 
-  handleValidationErrors, 
-  profesionalController.buscarProfesionales
-);
+// GET /api/profesionales/buscar?especialidad=...
+router.get('/buscar', buscarProfesionales);
 
-// Obtener profesional por ID
-router.get('/:id', 
-  validateParams.id, 
-  handleValidationErrors, 
-  profesionalController.obtenerProfesionalPorId
-);
+// Obtener perfil público de un profesional por ID
+// GET /api/profesionales/1
+router.get('/:id', obtenerProfesionalPorId);
 
-// Obtener profesional por usuario
-router.get('/usuario/:userId', 
-  validateParams.userId, 
-  handleValidationErrors, 
-  profesionalController.obtenerProfesionalPorUsuario
-);
+// Obtener perfil de profesional por ID de Usuario
+// GET /api/profesionales/usuario/1
+router.get('/usuario/:id_usuario', obtenerProfesionalPorUsuario);
 
-// Actualizar profesional
-router.put('/:id', 
-  authenticateToken, 
-  validateParams.id, 
-  validateProfesional.crear, 
-  handleValidationErrors, 
-  profesionalController.actualizarProfesional
-);
 
-// Actualizar rating del profesional
-router.put('/:id/rating', 
-  authenticateToken, 
-  validateParams.id, 
-  handleValidationErrors, 
-  profesionalController.actualizarRatingProfesional
-);
+// --- Rutas Protegidas (Ej: solo para el propio profesional o admin) ---
 
-// Obtener estadísticas de profesionales
-router.get('/estadisticas/generales', 
-  validateQuery.fechas, 
-  handleValidationErrors, 
-  profesionalController.obtenerEstadisticasProfesionales
-);
+// Crear un nuevo perfil de profesional
+// POST /api/profesionales
+router.post('/', /* protect, restrictTo('admin', 'profesional'), */ crearProfesional);
 
-// Eliminar profesional
-router.delete('/:id', 
-  authenticateToken, 
-  validateParams.id, 
-  handleValidationErrors, 
-  profesionalController.eliminarProfesional
-);
+// Actualizar un perfil de profesional
+// PUT /api/profesionales/1
+router.put('/:id', /* protect, */ actualizarProfesional);
+
+// Eliminar un perfil de profesional
+// DELETE /api/profesionales/1
+router.delete('/:id', /* protect, restrictTo('admin'), */ eliminarProfesional);
 
 module.exports = router;

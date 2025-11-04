@@ -1,7 +1,13 @@
+// --- [RUTAS] routes/mensajes.js ¡CARGADO Y CORREGIDO! ---
+console.log('--- [RUTAS] routes/mensajes.js ¡CARGADO Y CORREGIDO! ---');
+
 const express = require('express');
 const router = express.Router();
 const mensajeController = require('../controllers/mensajeController');
 const { authenticateToken } = require('../middleware/auth');
+
+// --- ¡CORREGIDO! ---
+// Se importa 'validateMensaje' (singular) y los 'validateParams' correctos
 const { 
   validateMensaje,
   validateParams, 
@@ -31,9 +37,12 @@ router.get('/enviados',
   mensajeController.obtenerMensajesEnviados
 );
 
-router.get('/conversacion/:id_usuarioss2', 
+// --- ¡CORREGIDO! ---
+// La ruta ahora es '/conversacion/:id_usuario'
+// La validación ahora es 'validateParams.idUsuario'
+router.get('/conversacion/:id_usuario', 
   authenticateToken, 
-  validateParams.idusuarioss, 
+  validateParams.idUsuario, // <-- Corregido
   validateQuery.paginacion, 
   handleValidationErrors, 
   mensajeController.obtenerConversacion

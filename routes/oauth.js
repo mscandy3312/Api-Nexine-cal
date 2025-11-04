@@ -98,13 +98,13 @@ router.post('/google', validacionesGoogle, handleValidationErrors, oauthControll
  * @desc Login/Registro con WhatsApp OAuth
  * @access Public
  * @body {string} token - Token de WhatsApp
- * @body {string} numeroTelefono - Número de teléfono del usuario
+ * @body {string} numeroTelefono - Número de teléfono del usuarioss
  */
 router.post('/whatsapp', validacionesWhatsApp, handleValidationErrors, oauthController.loginConWhatsApp);
 
 /**
  * @route POST /api/oauth/vincular
- * @desc Vincular cuenta OAuth adicional al usuario autenticado
+ * @desc Vincular cuenta OAuth adicional al usuarioss autenticado
  * @access Private
  * @body {string} proveedor - Proveedor OAuth (google/whatsapp)
  * @body {string} token - Token del proveedor OAuth
@@ -113,7 +113,7 @@ router.post('/vincular', auth.authenticateToken, validacionesVincular, handleVal
 
 /**
  * @route DELETE /api/oauth/desvincular/:proveedor
- * @desc Desvincular cuenta OAuth del usuario autenticado
+ * @desc Desvincular cuenta OAuth del usuarioss autenticado
  * @access Private
  * @param {string} proveedor - Proveedor OAuth a desvincular
  */
@@ -121,7 +121,7 @@ router.delete('/desvincular/:proveedor', auth.authenticateToken, validacionesPro
 
 /**
  * @route GET /api/oauth/info
- * @desc Obtener información OAuth del usuario autenticado
+ * @desc Obtener información OAuth del usuarioss autenticado
  * @access Private
  */
 router.get('/info', auth.authenticateToken, oauthController.obtenerInfoOAuth);

@@ -1,7 +1,11 @@
+// --- [MIDDLEWARE] middleware/validation.js ¡CARGADO Y CORREGIDO! ---
+console.log('--- [MIDDLEWARE] middleware/validation.js ¡CARGADO Y CORREGIDO! ---');
+
 const { body, param, query, validationResult } = require('express-validator');
 
-// Validaciones para usuariosss
-const validateusuarioss = {
+// --- ¡CORREGIDO! ---
+// Validaciones para usuarios (Nombre de objeto singular)
+const validateUsuario = {
   registro: [
     body('email')
       .isEmail()
@@ -21,8 +25,6 @@ const validateusuarioss = {
       .withMessage('El rol debe ser admin, profesional o cliente')
   ],
   
-  // --- ¡NUEVA REGLA AÑADIDA! ---
-  // Esta regla es la que faltaba y causaba el error
   verificarCodigo: [
     body('email')
       .isEmail()
@@ -70,26 +72,31 @@ const validateusuarioss = {
   ]
 };
 
-// Validaciones para profesionales
+// --- ¡CORREGIDO! ---
+// Validaciones para profesionales (Ajustado a schema real)
 const validateProfesional = {
   crear: [
-    body('id_usuarioss')
+    // --- ¡CORREGIDO! ---
+    body('id_usuario')
       .isInt({ min: 1 })
-      .withMessage('ID de usuarioss debe ser un número entero positivo'),
+      .withMessage('ID de usuario debe ser un número entero positivo'),
+    body('id_especialidad')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('ID de especialidad debe ser un número entero positivo'),
     body('nombre_completo')
       .notEmpty()
       .withMessage('El nombre completo es requerido')
-      .isLength({ min: 2, max: 150 })
-      .withMessage('El nombre completo debe tener entre 2 y 150 caracteres'),
+      .isLength({ min: 2, max: 150 }),
+    body('email')
+      .optional()
+      .isEmail()
+      .withMessage('Debe ser un email válido'),
     body('telefono')
       .optional()
       .isLength({ max: 20 })
       .withMessage('El teléfono no puede tener más de 20 caracteres'),
-    body('numero_colegiado')
-      .optional()
-      .isLength({ max: 50 })
-      .withMessage('El número colegiado no puede tener más de 50 caracteres'),
-    body('especialidad')
+    body('especialidad') // Campo string
       .optional()
       .isLength({ max: 100 })
       .withMessage('La especialidad no puede tener más de 100 caracteres'),
@@ -97,233 +104,227 @@ const validateProfesional = {
       .optional()
       .isLength({ max: 255 })
       .withMessage('La dirección no puede tener más de 255 caracteres'),
-    body('biografia')
+    // --- ¡CORREGIDO! --- (biografia -> descripcion)
+    body('descripcion')
       .optional()
       .isLength({ max: 1000 })
-      .withMessage('La biografía no puede tener más de 1000 caracteres')
+      .withMessage('La descripción no puede tener más de 1000 caracteres'),
+    body('tarifa_por_hora')
+      .optional()
+      .isFloat({ min: 0 })
+      .withMessage('La tarifa debe ser un número positivo'),
+    body('modalidad_cita')
+      .optional()
+      .isIn(['presencial', 'virtual', 'hibrida'])
+      .withMessage('Modalidad no válida'),
+    body('modo_atencion')
+      .optional()
+      .isIn(['consultorio', 'domicilio'])
+      .withMessage('Modo de atención no válido')
   ]
 };
 
-// Validaciones para clientess
-const validateclientes = {
+// --- ¡CORREGIDO! ---
+// Validaciones para clientes (Ajustado a schema real)
+const validateCliente = {
   crear: [
-    body('id_usuarioss')
+    // --- ¡CORREGIDO! ---
+    body('id_usuario')
       .isInt({ min: 1 })
-      .withMessage('ID de usuarioss debe ser un número entero positivo'),
+      .withMessage('ID de usuario debe ser un número entero positivo'),
     body('nombre_completo')
       .notEmpty()
       .withMessage('El nombre completo es requerido')
-      .isLength({ min: 2, max: 150 })
-      .withMessage('El nombre completo debe tener entre 2 y 150 caracteres'),
+      .isLength({ min: 2, max: 150 }),
     body('telefono')
       .optional()
       .isLength({ max: 20 })
       .withMessage('El teléfono no puede tener más de 20 caracteres'),
-    body('nombre_usuarioss')
+    body('email')
       .optional()
-      .isLength({ min: 3, max: 50 })
-      .withMessage('El nombre de usuarioss debe tener entre 3 y 50 caracteres'),
-    body('ciudad')
+      .isEmail()
+      .withMessage('El email debe ser válido'),
+    body('fecha_nacimiento')
       .optional()
-      .isLength({ max: 100 })
-      .withMessage('La ciudad no puede tener más de 100 caracteres'),
-    body('codigo_postal')
+      .isISO8601()
+      .withMessage('La fecha de nacimiento debe ser una fecha válida'),
+    body('historial_medico')
       .optional()
-      .isLength({ max: 20 })
-      .withMessage('El código postal no puede tener más de 20 caracteres'),
-    body('ingreso')
-      .optional()
-      .isFloat({ min: 0 })
-      .withMessage('El ingreso debe ser un número positivo'),
-    body('estado')
-      .optional()
-      .isLength({ max: 50 })
-      .withMessage('El estado no puede tener más de 50 caracteres')
+      .isString()
+      .withMessage('El historial médico debe ser texto')
   ]
 };
 
-// Validaciones para precios
+// --- ¡CORREGIDO! ---
+// Validaciones para precios (Ajustado a schema real de App.js)
 const validatePrecio = {
   crear: [
-    body('numero_sesion')
-      .optional()
+    body('id_profesional')
       .isInt({ min: 1 })
-      .withMessage('El número de sesión debe ser un entero positivo'),
+      .withMessage('ID de profesional debe ser un número entero positivo'),
     body('nombre_paquete')
-      .optional()
-      .isLength({ max: 100 })
-      .withMessage('El nombre del paquete no puede tener más de 100 caracteres'),
-    body('duracion')
-      .optional()
-      .isLength({ max: 50 })
-      .withMessage('La duración no puede tener más de 50 caracteres'),
+      .notEmpty()
+      .withMessage('El nombre del paquete es requerido')
+      .isLength({ max: 100 }),
+    body('precio')
+      .isFloat({ min: 0 })
+      .withMessage('El precio debe ser un número positivo'),
+    body('duracion_minutos')
+      .isInt({ min: 1 })
+      .withMessage('La duración debe ser un entero positivo'),
     body('modalidad')
       .optional()
-      .isLength({ max: 50 })
-      .withMessage('La modalidad no puede tener más de 50 caracteres'),
-    body('horario')
+      .isIn(['presencial', 'virtual'])
+      .withMessage('Modalidad no válida'),
+    body('activo')
       .optional()
-      .isLength({ max: 100 })
-      .withMessage('El horario no puede tener más de 100 caracteres')
+      .isBoolean()
+      .withMessage('Activo debe ser booleano')
   ]
 };
 
-// Validaciones para citass
-const validatecitas = {
+// --- ¡CORREGIDO! ---
+// Validaciones para citas (Ajustado a schema real de App.js)
+const validateCita = {
   crear: [
-    body('id_clientes')
+    body('id_cliente')
       .isInt({ min: 1 })
-      .withMessage('ID de clientes debe ser un número entero positivo'),
+      .withMessage('ID de cliente debe ser un número entero positivo'),
     body('id_profesional')
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo'),
-    body('id_precio')
+    body('id_evento')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('ID de precio debe ser un número entero positivo'),
-    body('fecha')
+      .withMessage('ID de evento debe ser un número entero positivo'),
+    body('fecha_inicio')
       .isISO8601()
-      .withMessage('La fecha debe ser válida en formato ISO 8601'),
-    body('motivo')
+      .withMessage('La fecha de inicio debe ser válida en formato ISO 8601'),
+    body('fecha_fin')
+      .isISO8601()
+      .withMessage('La fecha de fin debe ser válida en formato ISO 8601'),
+    body('tipo_cita')
       .optional()
-      .isLength({ max: 500 })
-      .withMessage('El motivo no puede tener más de 500 caracteres'),
-    body('notas')
+      .isIn(['presencial', 'virtual'])
+      .withMessage('Tipo de cita no válido'),
+    body('estado')
       .optional()
-      .isLength({ max: 1000 })
-      .withMessage('Las notas no pueden tener más de 1000 caracteres')
+      .isIn(['pendiente', 'confirmada', 'cancelada', 'completada'])
+      .withMessage('Estado no válido')
   ]
 };
 
-// Validaciones para sesiones
+// --- ¡CORREGIDO! ---
+// Validaciones para sesiones (Ajustado a schema real de App.js)
 const validateSesion = {
   crear: [
-    body('id_clientes')
+    body('id_cita')
       .isInt({ min: 1 })
-      .withMessage('ID de clientes debe ser un número entero positivo'),
+      .withMessage('ID de cita debe ser un número entero positivo'),
+    body('id_cliente')
+      .isInt({ min: 1 })
+      .withMessage('ID de cliente debe ser un número entero positivo'),
     body('id_profesional')
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo'),
-    body('id_precio')
-      .isInt({ min: 1 })
-      .withMessage('ID de precio debe ser un número entero positivo'),
-    body('id_citas')
-      .optional()
-      .isInt({ min: 1 })
-      .withMessage('ID de citas debe ser un número entero positivo'),
-    body('numero_pedido')
-      .optional()
-      .isLength({ max: 100 })
-      .withMessage('El número de pedido no puede tener más de 100 caracteres'),
-    body('fecha')
+    body('fecha_sesion')
       .isISO8601()
       .withMessage('La fecha debe ser válida en formato ISO 8601'),
+    body('duracion_minutos')
+      .isInt({ min: 1 })
+      .withMessage('La duración debe ser un entero positivo'),
     body('estado')
       .optional()
-      .isLength({ max: 50 })
-      .withMessage('El estado no puede tener más de 50 caracteres'),
-    body('acciones')
+      .isIn(['programada', 'completada', 'cancelada', 'no_asistio'])
+      .withMessage('Estado no válido'),
+    body('notas_profesional')
       .optional()
-      .isLength({ max: 1000 })
-      .withMessage('Las acciones no pueden tener más de 1000 caracteres'),
-    body('producto')
+      .isString(),
+    body('notas_cliente')
       .optional()
-      .isLength({ max: 100 })
-      .withMessage('El producto no puede tener más de 100 caracteres'),
-    body('metodo_pago')
-      .optional()
-      .isLength({ max: 50 })
-      .withMessage('El método de pago no puede tener más de 50 caracteres')
+      .isString()
   ]
 };
 
-// Validaciones para valoraciones
+// --- ¡CORREGIDO! ---
+// Validaciones para valoraciones (Ajustado a schema real de App.js)
 const validateValoracion = {
   crear: [
-    body('id_sesion')
+    body('id_cliente')
       .isInt({ min: 1 })
-      .withMessage('ID de sesión debe ser un número entero positivo'),
-    body('rating')
-      .isInt({ min: 1, max: 5 })
-      .withMessage('El rating debe ser un número entero entre 1 y 5'),
-    body('mensaje')
-      .optional()
-      .isLength({ max: 1000 })
-      .withMessage('El mensaje no puede tener más de 1000 caracteres'),
-    body('estado')
-      .optional()
-      .isLength({ max: 50 })
-      .withMessage('El estado no puede tener más de 50 caracteres')
-  ]
-};
-
-// Validaciones para pagos
-const validatePago = {
-  crear: [
+      .withMessage('ID de cliente debe ser un número entero positivo'),
     body('id_profesional')
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo'),
-    body('balance_general')
+    body('id_sesion')
       .optional()
-      .isFloat()
-      .withMessage('El balance general debe ser un número'),
-    body('ventas')
+      .isInt({ min: 1 })
+      .withMessage('ID de sesión debe ser un número entero positivo'),
+    // --- ¡CORREGIDO! --- (rating -> calificacion)
+    body('calificacion')
+      .isInt({ min: 1, max: 5 })
+      .withMessage('La calificación debe ser un número entero entre 1 y 5'),
+    // --- ¡CORREGIDO! --- (mensaje -> comentario)
+    body('comentario')
       .optional()
-      .isFloat({ min: 0 })
-      .withMessage('Las ventas deben ser un número positivo'),
-    body('comision')
-      .optional()
-      .isFloat({ min: 0 })
-      .withMessage('La comisión debe ser un número positivo'),
-    body('fecha')
-      .optional()
-      .isISO8601()
-      .withMessage('La fecha debe ser válida en formato ISO 8601'),
-    body('especialidad')
-      .optional()
-      .isLength({ max: 100 })
-      .withMessage('La especialidad no puede tener más de 100 caracteres'),
-    body('estado')
-      .optional()
-      .isLength({ max: 50 })
-      .withMessage('El estado no puede tener más de 50 caracteres'),
-    body('accion')
-      .optional()
-      .isLength({ max: 100 })
-      .withMessage('La acción no puede tener más de 100 caracteres')
+      .isLength({ max: 1000 })
+      .withMessage('El comentario no puede tener más de 1000 caracteres')
   ]
 };
 
-// Validaciones para transacciones Stripe
+// --- ¡CORREGIDO! ---
+// Validaciones para pagos (Ajustado a schema real de App.js)
+const validatePago = {
+  crear: [
+    body('id_cliente')
+      .isInt({ min: 1 })
+      .withMessage('ID de cliente debe ser un número entero positivo'),
+    body('id_profesional')
+      .isInt({ min: 1 })
+      .withMessage('ID de profesional debe ser un número entero positivo'),
+    body('id_cita')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('ID de cita debe ser un número entero positivo'),
+    body('monto')
+      .isFloat({ min: 0 })
+      .withMessage('El monto debe ser un número positivo'),
+    body('metodo_pago')
+      .optional()
+      .isIn(['stripe', 'transferencia', 'efectivo'])
+      .withMessage('Método de pago no válido'),
+    body('estado')
+      .optional()
+      .isIn(['pendiente', 'completado', 'fallido', 'reembolsado'])
+      .withMessage('Estado no válido')
+  ]
+};
+
+// --- ¡CORREGIDO! ---
+// Validaciones para transacciones Stripe (Ajustado a schema real de App.js)
 const validateTransaccionStripe = {
   crear: [
     body('id_pago')
       .isInt({ min: 1 })
       .withMessage('ID de pago debe ser un número entero positivo'),
-    body('id_sesion')
-      .optional()
-      .isInt({ min: 1 })
-      .withMessage('ID de sesión debe ser un número entero positivo'),
-    body('stripe_payment_id')
+    // --- ¡CORREGIDO! --- (stripe_payment_id -> stripe_payment_intent_id)
+    body('stripe_payment_intent_id')
       .notEmpty()
       .withMessage('El ID de pago de Stripe es requerido')
-      .isLength({ max: 255 })
-      .withMessage('El ID de pago de Stripe no puede tener más de 255 caracteres'),
-    body('monto')
-      .isFloat({ min: 0 })
-      .withMessage('El monto debe ser un número positivo'),
+      .isLength({ max: 255 }),
+    // --- ¡CORREGIDO! --- (monto -> monto_centavos)
+    body('monto_centavos')
+      .isInt({ min: 0 })
+      .withMessage('El monto en centavos debe ser un número positivo'),
     body('moneda')
       .optional()
-      .isLength({ min: 3, max: 10 })
-      .withMessage('La moneda debe tener entre 3 y 10 caracteres'),
-    body('estado')
-      .optional()
-      .isIn(['pendiente', 'pagado', 'fallido', 'reembolsado'])
-      .withMessage('El estado debe ser uno de: pendiente, pagado, fallido, reembolsado'),
-    body('metodo_pago')
+      .isLength({ min: 3, max: 3 })
+      .withMessage('La moneda debe ser un código de 3 letras (ej. usd, mxn)'),
+    // --- ¡CORREGIDO! --- (estado -> estado_stripe)
+    body('estado_stripe')
       .optional()
       .isLength({ max: 50 })
-      .withMessage('El método de pago no puede tener más de 50 caracteres')
+      .withMessage('El estado de Stripe no puede tener más de 50 caracteres')
   ]
 };
 
@@ -335,10 +336,11 @@ const validateParams = {
       .withMessage('El ID debe ser un número entero positivo')
   ],
   
+  // --- ¡CORREGIDO! ---
   userId: [
-    param('userId')
+    param('userId') // Asumiendo que la ruta usa /:userId
       .isInt({ min: 1 })
-      .withMessage('El ID de usuarioss debe ser un número entero positivo')
+      .withMessage('El ID de usuario debe ser un número entero positivo')
   ]
 };
 
@@ -384,34 +386,37 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Validaciones para favoritos
+// Validaciones para favoritos (Ajustado a schema real de App.js)
 const validateFavorito = {
   crear: [
+    body('id_cliente')
+      .isInt({ min: 1 })
+      .withMessage('ID de cliente debe ser un número entero positivo'),
     body('id_profesional')
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo')
   ]
 };
 
-// Validaciones para mensajes
+// Validaciones para mensajes (Ajustado a schema real de App.js)
 const validateMensaje = {
   crear: [
+    body('id_remitente')
+      .isInt({ min: 1 })
+      .withMessage('ID de remitente debe ser un número entero positivo'),
     body('id_destinatario')
       .isInt({ min: 1 })
       .withMessage('ID de destinatario debe ser un número entero positivo'),
     body('asunto')
       .optional()
-      .isLength({ max: 255 })
-      .withMessage('El asunto no puede tener más de 255 caracteres'),
+      .isLength({ max: 255 }),
     body('contenido')
       .notEmpty()
       .withMessage('El contenido es requerido')
-      .isLength({ max: 2000 })
-      .withMessage('El contenido no puede tener más de 2000 caracteres'),
+      .isLength({ max: 2000 }),
     body('tipo_mensaje')
       .optional()
-      .isIn(['general', 'citas', 'sesion', 'pago', 'soporte'])
-      .withMessage('Tipo de mensaje no válido'),
+      .isLength({ max: 50 }),
     body('prioridad')
       .optional()
       .isIn(['normal', 'media', 'alta'])
@@ -419,18 +424,23 @@ const validateMensaje = {
   ]
 };
 
-// Validaciones para documentos
+// Validaciones para documentos (Ajustado a schema real de App.js)
 const validateDocumento = {
   crear: [
+    body('id_profesional')
+      .isInt({ min: 1 })
+      .withMessage('ID de profesional debe ser un número entero positivo'),
+    body('nombre_archivo')
+      .notEmpty()
+      .withMessage('El nombre de archivo es requerido'),
     body('tipo_documento')
       .notEmpty()
       .withMessage('El tipo de documento es requerido')
-      .isLength({ max: 100 })
-      .withMessage('El tipo de documento no puede tener más de 100 caracteres'),
-    body('descripcion')
+      .isLength({ max: 100 }),
+    body('estado')
       .optional()
-      .isLength({ max: 500 })
-      .withMessage('La descripción no puede tener más de 500 caracteres'),
+      .isIn(['activo', 'archivado'])
+      .withMessage('Estado no válido'),
     body('es_publico')
       .optional()
       .isBoolean()
@@ -438,43 +448,42 @@ const validateDocumento = {
   ]
 };
 
-// Validaciones para notificaciones
+// Validaciones para notificaciones (Ajustado a schema real de App.js)
 const validateNotificacion = {
   crear: [
-    body('id_usuarioss')
+    // --- ¡CORREGIDO! ---
+    body('id_usuario')
       .isInt({ min: 1 })
-      .withMessage('ID de usuarioss debe ser un número entero positivo'),
+      .withMessage('ID de usuario debe ser un número entero positivo'),
     body('tipo_notificacion')
       .notEmpty()
       .withMessage('El tipo de notificación es requerido')
-      .isLength({ max: 100 })
-      .withMessage('El tipo de notificación no puede tener más de 100 caracteres'),
+      .isLength({ max: 100 }),
     body('titulo')
       .notEmpty()
       .withMessage('El título es requerido')
-      .isLength({ max: 255 })
-      .withMessage('El título no puede tener más de 255 caracteres'),
+      .isLength({ max: 255 }),
     body('mensaje')
       .notEmpty()
       .withMessage('El mensaje es requerido')
-      .isLength({ max: 1000 })
-      .withMessage('El mensaje no puede tener más de 1000 caracteres'),
+      .isLength({ max: 1000 }),
     body('prioridad')
       .optional()
       .isIn(['normal', 'media', 'alta'])
       .withMessage('Prioridad no válida'),
     body('canal')
       .optional()
-      .isIn(['app', 'email', 'sms', 'whatsapp'])
+      .isIn(['app', 'email']) // Ajustado a valores probables
       .withMessage('Canal no válido')
   ],
   masiva: [
-    body('usuariosss')
+    // --- ¡CORREGIDO! ---
+    body('usuarios')
       .isArray({ min: 1 })
-      .withMessage('Se requiere un array de usuariosss'),
-    body('usuariosss.*')
+      .withMessage('Se requiere un array de usuarios'),
+    body('usuarios.*')
       .isInt({ min: 1 })
-      .withMessage('Cada usuarioss debe ser un ID válido'),
+      .withMessage('Cada usuario debe ser un ID válido'),
     body('tipo_notificacion')
       .notEmpty()
       .withMessage('El tipo de notificación es requerido'),
@@ -495,10 +504,11 @@ const validateParamsExtended = {
       .isInt({ min: 1 })
       .withMessage('ID de profesional debe ser un número entero positivo')
   ],
-  idusuarioss: [
-    param('id_usuarioss2')
+  // --- ¡CORREGIDO! ---
+  idUsuario: [
+    param('id_usuario') // <-- Corregido
       .isInt({ min: 1 })
-      .withMessage('ID de usuarioss debe ser un número entero positivo')
+      .withMessage('ID de usuario debe ser un número entero positivo')
   ],
   tipoDocumento: [
     param('tipo_documento')
@@ -517,17 +527,18 @@ const validateParamsExtended = {
   ],
   proveedor: [
     param('proveedor')
-      .isIn(['google', 'whatsapp'])
-      .withMessage('Proveedor debe ser google o whatsapp')
+      .isIn(['google', 'outlook']) // Ajustado
+      .withMessage('Proveedor debe ser google u outlook')
   ]
 };
 
+// --- ¡CORREGIDO! --- (Exportaciones)
 module.exports = {
-  validateusuarioss, // <-- Exporta el nombre correcto (plural)
+  validateUsuario,
   validateProfesional,
-  validateclientes,
+  validateCliente,
   validatePrecio,
-  validatecitas,
+  validateCita,
   validateSesion,
   validateValoracion,
   validatePago,

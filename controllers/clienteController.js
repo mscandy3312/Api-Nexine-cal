@@ -1,8 +1,13 @@
-const clientes = require('../models/Clientes');
+// --- [CONTROLADOR] controllers/clienteController.js ¡CARGADO Y CORREGIDO! ---
+console.log('--- [CONTROLADOR] controllers/clienteController.js ¡CARGADO Y CORREGIDO! ---');
+
+// --- ¡CORREGIDO! --- (Importa el modelo en singular)
+const Cliente = require('../models/Clientes');
 const { validationResult } = require('express-validator');
 
-// Crear clientes
-const crearclientes = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Crear cliente
+const crearCliente = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -13,57 +18,47 @@ const crearclientes = async (req, res) => {
       });
     }
 
+    // --- ¡CORREGIDO! --- (Campos ajustados al modelo real)
     const {
-      id_usuarioss,
+      id_usuario,
       nombre_completo,
       telefono,
-      nombre_usuarioss,
-      ciudad,
-      codigo_postal,
-      ingreso,
-      estado
+      email,
+      fecha_nacimiento,
+      historial_medico
     } = req.body;
 
-    // Verificar si el usuarioss ya tiene un perfil de clientes
-    const clientesExistente = await clientes.findByUserId(id_usuarioss);
-    if (clientesExistente) {
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    // Verificar si el usuario ya tiene un perfil de cliente
+    const clienteExistente = await Cliente.findByUserId(id_usuario);
+    if (clienteExistente) {
       return res.status(400).json({
         success: false,
-        message: 'El usuarioss ya tiene un perfil de clientes'
+        message: 'El usuario ya tiene un perfil de cliente'
       });
     }
 
-    // Verificar si el nombre de usuarioss ya existe
-    if (nombre_usuarioss) {
-      const clientesConUsername = await clientes.findByUsername(nombre_usuarioss);
-      if (clientesConUsername) {
-        return res.status(400).json({
-          success: false,
-          message: 'El nombre de usuarioss ya está en uso'
-        });
-      }
-    }
+    // (Se elimina la verificación de 'nombre_usuarioss' porque ya no existe)
 
-    const nuevoclientes = await clientes.create({
-      id_usuarioss,
+    // --- ¡CORREGIDO! --- (Usa el modelo singular y campos correctos)
+    const nuevoCliente = await Cliente.create({
+      id_usuario,
       nombre_completo,
       telefono,
-      nombre_usuarioss,
-      ciudad,
-      codigo_postal,
-      ingreso,
-      estado
+      email,
+      fecha_nacimiento,
+      historial_medico
     });
 
     res.status(201).json({
       success: true,
-      message: 'clientes creado exitosamente',
+      message: 'Cliente creado exitosamente',
       data: {
-        clientes: nuevoclientes
+        cliente: nuevoCliente
       }
     });
   } catch (error) {
-    console.error('Error al crear clientes:', error);
+    console.error('Error al crear cliente:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -72,31 +67,33 @@ const crearclientes = async (req, res) => {
   }
 };
 
-// Obtener todos los clientess
-const obtenerclientess = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Obtener todos los clientes
+const obtenerClientes = async (req, res) => {
   try {
     const { limit = 50, offset = 0, search } = req.query;
     
-    let clientess;
+    let clientes;
     if (search) {
-      clientess = await clientes.search({ nombre_completo: search }, parseInt(limit), parseInt(offset));
+      // --- ¡CORREGIDO! --- (Usa el modelo singular)
+      clientes = await Cliente.search({ nombre_completo: search }, parseInt(limit), parseInt(offset));
     } else {
-      clientess = await clientes.findAll(parseInt(limit), parseInt(offset));
+      clientes = await Cliente.findAll(parseInt(limit), parseInt(offset));
     }
 
     res.json({
       success: true,
       data: {
-        clientess,
+        clientes,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: clientess.length
+          total: clientes.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener clientess:', error);
+    console.error('Error al obtener clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -105,31 +102,33 @@ const obtenerclientess = async (req, res) => {
   }
 };
 
-// Obtener clientes por ID
-const obtenerclientesPorId = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Obtener cliente por ID
+const obtenerClientePorId = async (req, res) => {
   try {
     const { id } = req.params;
-    const clientes = await clientes.findById(id);
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    const cliente = await Cliente.findById(id);
     
-    if (!clientes) {
+    if (!cliente) {
       return res.status(404).json({
         success: false,
-        message: 'clientes no encontrado'
+        message: 'Cliente no encontrado'
       });
     }
 
-    // Obtener estadísticas del clientes
-    const stats = await clientes.getStats();
+    // Obtener estadísticas del cliente
+    const stats = await cliente.getStats();
 
     res.json({
       success: true,
       data: {
-        clientes,
+        cliente,
         estadisticas: stats
       }
     });
   } catch (error) {
-    console.error('Error al obtener clientes:', error);
+    console.error('Error al obtener cliente:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -138,31 +137,33 @@ const obtenerclientesPorId = async (req, res) => {
   }
 };
 
-// Obtener clientes por usuarioss
-const obtenerclientesPorusuarioss = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Obtener cliente por ID de Usuario
+const obtenerClientePorUsuario = async (req, res) => {
   try {
     const { userId } = req.params;
-    const clientes = await clientes.findByUserId(userId);
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    const cliente = await Cliente.findByUserId(userId);
     
-    if (!clientes) {
+    if (!cliente) {
       return res.status(404).json({
         success: false,
-        message: 'clientes no encontrado'
+        message: 'Cliente no encontrado'
       });
     }
 
-    // Obtener estadísticas del clientes
-    const stats = await clientes.getStats();
+    // Obtener estadísticas del cliente
+    const stats = await cliente.getStats();
 
     res.json({
       success: true,
       data: {
-        clientes,
+        cliente,
         estadisticas: stats
       }
     });
   } catch (error) {
-    console.error('Error al obtener clientes:', error);
+    console.error('Error al obtener cliente:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -171,8 +172,9 @@ const obtenerclientesPorusuarioss = async (req, res) => {
   }
 };
 
-// Actualizar clientes
-const actualizarclientes = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Actualizar cliente
+const actualizarCliente = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -184,55 +186,45 @@ const actualizarclientes = async (req, res) => {
     }
 
     const { id } = req.params;
-    const clientes = await clientes.findById(id);
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    const cliente = await Cliente.findById(id);
     
-    if (!clientes) {
+    if (!cliente) {
       return res.status(404).json({
         success: false,
-        message: 'clientes no encontrado'
+        message: 'Cliente no encontrado'
       });
     }
 
+    // --- ¡CORREGIDO! --- (Campos ajustados al modelo real)
     const {
       nombre_completo,
       telefono,
-      nombre_usuarioss,
-      ciudad,
-      codigo_postal,
-      ingreso,
-      estado
+      email,
+      fecha_nacimiento,
+      historial_medico
     } = req.body;
 
     const datosActualizacion = {};
     if (nombre_completo) datosActualizacion.nombre_completo = nombre_completo;
     if (telefono !== undefined) datosActualizacion.telefono = telefono;
-    if (nombre_usuarioss !== undefined) {
-      // Verificar si el nombre de usuarioss ya existe en otro clientes
-      const clientesConUsername = await clientes.findByUsername(nombre_usuarioss);
-      if (clientesConUsername && clientesConUsername.id_clientes !== clientes.id_clientes) {
-        return res.status(400).json({
-          success: false,
-          message: 'El nombre de usuarioss ya está en uso'
-        });
-      }
-      datosActualizacion.nombre_usuarioss = nombre_usuarioss;
-    }
-    if (ciudad !== undefined) datosActualizacion.ciudad = ciudad;
-    if (codigo_postal !== undefined) datosActualizacion.codigo_postal = codigo_postal;
-    if (ingreso !== undefined) datosActualizacion.ingreso = ingreso;
-    if (estado !== undefined) datosActualizacion.estado = estado;
+    if (email !== undefined) datosActualizacion.email = email;
+    if (fecha_nacimiento !== undefined) datosActualizacion.fecha_nacimiento = fecha_nacimiento;
+    if (historial_medico !== undefined) datosActualizacion.historial_medico = historial_medico;
 
-    const clientesActualizado = await clientes.update(datosActualizacion);
+    // (Se elimina la verificación de 'nombre_usuarioss' porque ya no existe)
+
+    const clienteActualizado = await cliente.update(datosActualizacion);
 
     res.json({
       success: true,
-      message: 'clientes actualizado exitosamente',
+      message: 'Cliente actualizado exitosamente',
       data: {
-        clientes: clientesActualizado
+        cliente: clienteActualizado
       }
     });
   } catch (error) {
-    console.error('Error al actualizar clientes:', error);
+    console.error('Error al actualizar cliente:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -241,43 +233,41 @@ const actualizarclientes = async (req, res) => {
   }
 };
 
-// Buscar clientess
-const buscarclientess = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Buscar clientes
+const buscarClientes = async (req, res) => {
   try {
     const { 
       limit = 50, 
       offset = 0, 
       nombre_completo, 
-      nombre_usuarioss, 
-      ciudad, 
-      estado, 
-      ingreso_min, 
-      ingreso_max 
+      email,
+      telefono
     } = req.query;
 
+    // --- ¡CORREGIDO! --- (Criterios ajustados al modelo real)
     const criterios = {};
     if (nombre_completo) criterios.nombre_completo = nombre_completo;
-    if (nombre_usuarioss) criterios.nombre_usuarioss = nombre_usuarioss;
-    if (ciudad) criterios.ciudad = ciudad;
-    if (estado) criterios.estado = estado;
-    if (ingreso_min) criterios.ingreso_min = parseFloat(ingreso_min);
-    if (ingreso_max) criterios.ingreso_max = parseFloat(ingreso_max);
+    if (email) criterios.email = email;
+    if (telefono) criterios.telefono = telefono;
+    
+    // (Se eliminan criterios de 'ciudad', 'estado', 'ingreso' porque no existen)
 
-    const clientess = await clientes.search(criterios, parseInt(limit), parseInt(offset));
+    const clientes = await Cliente.search(criterios, parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        clientess,
+        clientes,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: clientess.length
+          total: clientes.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al buscar clientess:', error);
+    console.error('Error al buscar clientes:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -286,21 +276,22 @@ const buscarclientess = async (req, res) => {
   }
 };
 
-// Obtener historial de sesiones del clientes
+// Obtener historial de sesiones del cliente
 const obtenerHistorialSesiones = async (req, res) => {
   try {
     const { id } = req.params;
     const { limit = 20, offset = 0 } = req.query;
     
-    const clientes = await clientes.findById(id);
-    if (!clientes) {
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    const cliente = await Cliente.findById(id);
+    if (!cliente) {
       return res.status(404).json({
         success: false,
-        message: 'clientes no encontrado'
+        message: 'Cliente no encontrado'
       });
     }
 
-    const sesiones = await clientes.getSesiones(parseInt(limit), parseInt(offset));
+    const sesiones = await cliente.getSesiones(parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
@@ -323,35 +314,38 @@ const obtenerHistorialSesiones = async (req, res) => {
   }
 };
 
-// Obtener historial de citass del clientes
-const obtenerHistorialcitass = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Obtener historial de citas del cliente
+const obtenerHistorialCitas = async (req, res) => {
   try {
     const { id } = req.params;
     const { limit = 20, offset = 0 } = req.query;
     
-    const clientes = await clientes.findById(id);
-    if (!clientes) {
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    const cliente = await Cliente.findById(id);
+    if (!cliente) {
       return res.status(404).json({
         success: false,
-        message: 'clientes no encontrado'
+        message: 'Cliente no encontrado'
       });
     }
 
-    const citass = await clientes.getcitass(parseInt(limit), parseInt(offset));
+    // --- ¡CORREGIDO! --- (Usa el método singular)
+    const citas = await cliente.getCitas(parseInt(limit), parseInt(offset));
 
     res.json({
       success: true,
       data: {
-        citass,
+        citas,
         paginacion: {
           limit: parseInt(limit),
           offset: parseInt(offset),
-          total: citass.length
+          total: citas.length
         }
       }
     });
   } catch (error) {
-    console.error('Error al obtener historial de citass:', error);
+    console.error('Error al obtener historial de citas:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -360,27 +354,29 @@ const obtenerHistorialcitass = async (req, res) => {
   }
 };
 
-// Eliminar clientes
-const eliminarclientes = async (req, res) => {
+// --- ¡CORREGIDO! --- (Nombre de función en singular)
+// Eliminar cliente
+const eliminarCliente = async (req, res) => {
   try {
     const { id } = req.params;
-    const clientes = await clientes.findById(id);
+    // --- ¡CORREGIDO! --- (Usa el modelo singular)
+    const cliente = await Cliente.findById(id);
     
-    if (!clientes) {
+    if (!cliente) {
       return res.status(404).json({
         success: false,
-        message: 'clientes no encontrado'
+        message: 'Cliente no encontrado'
       });
     }
 
-    await clientes.delete();
+    await cliente.delete();
 
     res.json({
       success: true,
-      message: 'clientes eliminado exitosamente'
+      message: 'Cliente eliminado exitosamente'
     });
   } catch (error) {
-    console.error('Error al eliminar clientes:', error);
+    console.error('Error al eliminar cliente:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',
@@ -389,14 +385,15 @@ const eliminarclientes = async (req, res) => {
   }
 };
 
+// --- ¡CORREGIDO! --- (Exporta nombres singulares)
 module.exports = {
-  crearclientes,
-  obtenerclientess,
-  obtenerclientesPorId,
-  obtenerclientesPorusuarioss,
-  actualizarclientes,
-  buscarclientess,
+  crearCliente,
+  obtenerClientes,
+  obtenerClientePorId,
+  obtenerClientePorUsuario,
+  actualizarCliente,
+  buscarClientes,
   obtenerHistorialSesiones,
-  obtenerHistorialcitass,
-  eliminarclientes
+  obtenerHistorialCitas,
+  eliminarCliente
 };
